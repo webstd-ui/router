@@ -1,3 +1,3 @@
-# View
+# Router
 
-Define the visual elements of your web app using a hierarchy of views.
+A lightweight, fully-featured routing library for WebStd UI with nested routing, parallel data loaders, and form action mutations.
