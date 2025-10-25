@@ -1,7 +1,28 @@
 {
     "name": "@webstd-ui/router",
-    "private": true,
     "version": "0.1.0",
+    "description": "A framework-agnostic client-side router built on @remix-run/fetch-router and @remix-run/events",
+    "keywords": [
+        "router",
+        "routing",
+        "framework-agnostic",
+        "client-side",
+        "spa",
+        "navigation",
+        "fetch-router",
+        "remix"
+    ],
+    "license": "MIT",
+    "author": "Mark Malstrom",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/webstd-ui/router.git",
+        "directory": "packages/router"
+    },
+    "homepage": "https://github.com/webstd-ui/router/tree/main/packages/router#readme",
+    "bugs": {
+        "url": "https://github.com/webstd-ui/router/issues"
+    },
     "type": "module",
     "main": "dist/index.js",
     "module": "dist/index.js",
@@ -12,6 +33,11 @@
             "import": "./dist/index.js"
         }
     },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
     "dependencies": {
         "@remix-run/events": "catalog:remix",
         "@remix-run/fetch-router": "catalog:remix"

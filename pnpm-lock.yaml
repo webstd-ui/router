@@ -137,10 +137,10 @@ importers:
   packages/router:
     dependencies:
       '@remix-run/events':
-        specifier: catalog:remix
+        specifier: 0.0.0-experimental-remix-jam.5
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
-        specifier: catalog:remix
+        specifier: ^0.6.0
         version: 0.6.0
     devDependencies:
       '@biomejs/biome':
