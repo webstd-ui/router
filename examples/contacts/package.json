@@ -1,0 +1,21 @@
+{
+    "name": "remix-contacts",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@remix-run/dom": "catalog:remix",
+        "@remix-run/events": "catalog:remix",
+        "@remix-run/fetch-router": "catalog:remix",
+        "@remix-run/style": "catalog:remix",
+        "@std/assert": "jsr:^1.0.15",
+        "@std/async": "jsr:^1.0.15",
+        "@webstd-ui/router": "workspace:*",
+        "match-sorter": "^8.1.0",
+        "sort-by": "^1.2.0"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:tools",
+        "@typescript/native-preview": "catalog:tools",
+        "vite": "catalog:dev"
+    }
+}

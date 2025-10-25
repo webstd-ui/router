@@ -1,0 +1,24 @@
+{
+    "name": "@webstd-ui/router",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "main": "dist/index.js",
+    "module": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "dependencies": {
+        "@remix-run/events": "catalog:remix",
+        "@remix-run/fetch-router": "catalog:remix"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:tools",
+        "@typescript/native-preview": "catalog:tools",
+        "tsdown": "catalog:dev"
+    }
+}

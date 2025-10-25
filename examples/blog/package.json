@@ -1,0 +1,17 @@
+{
+    "name": "remix-blog",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@remix-run/dom": "catalog:remix",
+        "@remix-run/events": "catalog:remix",
+        "@remix-run/fetch-router": "catalog:remix",
+        "@remix-run/style": "catalog:remix",
+        "@webstd-ui/router": "workspace:*"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:tools",
+        "@typescript/native-preview": "catalog:tools",
+        "vite": "catalog:dev"
+    }
+}

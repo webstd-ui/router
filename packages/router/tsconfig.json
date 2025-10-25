@@ -1,0 +1,18 @@
+{
+    "include": ["**/*"],
+    "compilerOptions": {
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "allowImportingTsExtensions": true,
+
+        "checkJs": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noEmit": true
+    }
+}

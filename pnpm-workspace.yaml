@@ -1,0 +1,30 @@
+packages:
+    - "examples/*"
+    - "packages/router"
+
+catalogs:
+    remix:
+        "@remix-run/dom": jam
+        "@remix-run/events": jam
+        "@remix-run/style": jam
+        "@remix-run/library": jam
+        "@remix-run/fetch-router": latest
+        "@remix-run/file-storage": latest
+        "@remix-run/headers": latest
+        "@remix-run/lazy-file": latest
+        "@remix-run/node-fetch-server": latest
+        "@remix-run/route-pattern": latest
+    dev:
+        vite: npm:rolldown-vite@latest
+        tsdown: ^0.15.7
+    tools:
+        "@biomejs/biome": ^2.3.0
+        "@typescript/native-preview": latest
+
+overrides:
+    vite: npm:rolldown-vite@latest
+
+onlyBuiltDependencies:
+    - esbuild
+    - sharp
+    - unrs-resolver

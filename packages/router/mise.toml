@@ -1,0 +1,45 @@
+[tools]
+node = "lts"
+pnpm = "latest"
+
+[env]
+_.path = ['{{config_root}}/node_modules/.bin']
+
+[tasks.install]
+description = "Install dependencies"
+sources = ["package.json"]
+run = "pnpm install"
+
+[tasks.dev]
+description = "Run the development server"
+depends = [":install"]
+run = "tsdown --watch"
+
+[tasks.build]
+description = "Build the app"
+depends = ":install"
+sources = [
+  "../../pnpm-lock.yaml",
+  "tsdown.config.ts",
+  "tsconfig.json",
+  "src/**/*.ts",
+]
+outputs = ["dist"]
+run = "tsdown"
+
+[tasks.fmt]
+description = "Format the entire project"
+run = "biome format --write ."
+
+[tasks.lint]
+description = "Lint the entire project"
+run = "biome lint --write --unsafe --assist-enabled=true ."
+
+[tasks.fix]
+description = "Format and lint the entire project"
+depends = [":fmt", ":lint"]
+
+[tasks.typecheck]
+description = "Typecheck the entire project"
+run = "tsgo --noEmit"
+
