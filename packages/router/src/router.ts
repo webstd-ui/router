@@ -278,7 +278,11 @@ export class Router<Renderable> extends EventTarget {
 
             // Update outlet with the result
             this.#outlet = result;
-            this.#location = location;
+            // Only update location for GET requests (navigation)
+            // For non-GET requests (mutations), keep the current location
+            if (!submission) {
+                this.#location = location;
+            }
 
             // Set navigating to idle
             this.#navigating = {
@@ -541,12 +545,15 @@ export class Router<Renderable> extends EventTarget {
      */
     async navigate(to: To, options: NavigateOptions = {}): Promise<void> {
         const pathname = this.#resolveTo(to);
+        const currentPath = window.location.pathname + window.location.search + window.location.hash;
 
-        // Update history
-        if (options.replace) {
-            window.history.replaceState({}, "", pathname);
-        } else {
-            window.history.pushState({}, "", pathname);
+        // Update history only if the path is different
+        if (pathname !== currentPath) {
+            if (options.replace) {
+                window.history.replaceState({}, "", pathname);
+            } else {
+                window.history.pushState({}, "", pathname);
+            }
         }
 
         // Perform navigation
@@ -622,8 +629,9 @@ export class Router<Renderable> extends EventTarget {
             formData = undefined;
         }
 
-        // Update history if this is a navigation
-        if (options.navigate !== false) {
+        // Update history only for GET requests
+        // Non-GET requests (POST, PUT, DELETE, etc.) should not change the URL or add history entries
+        if (options.navigate !== false && formMethod === "GET") {
             if (options.replace) {
                 window.history.replaceState({}, "", formAction);
             } else {

@@ -13,7 +13,7 @@ export function TaskItem(this: Remix.Handle) {
         const redirectId = routes.tasks.show.match(router.location.href)?.params.id ?? "";
 
         return (
-            <>
+            <task-item>
                 <span>{task.name}</span>
                 &nbsp;
                 <a href={routes.tasks.show.href({ id: task.id })}>Open</a>
@@ -39,7 +39,7 @@ export function TaskItem(this: Remix.Handle) {
                         {isDeleting ? "Deleting..." : "❌"}
                     </button>
                 </form>
-            </>
+            </task-item>
         );
     };
 }
