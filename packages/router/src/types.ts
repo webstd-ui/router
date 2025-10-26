@@ -107,6 +107,8 @@ export interface NavigateOptions {
     flushSync?: boolean;
     /** Enables a {@link https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API View Transition} for this navigation by wrapping the final state update in `document.startViewTransition()`. If you need to apply specific styles for this view transition, you will also need to leverage the {@link https://api.reactrouter.com/v7/functions/react_router.useViewTransitionState.html useViewTransitionState()} hook.  */
     viewTransition?: boolean;
+    /** AbortSignal to cancel this navigation if needed */
+    signal?: AbortSignal;
 }
 
 /** Parsed representation of a URL used by the router helpers. */
@@ -182,6 +184,8 @@ export interface SubmitOptions {
      * Enable view transitions on this submission navigation
      */
     viewTransition?: boolean;
+    /** AbortSignal to cancel this submission if needed */
+    signal?: AbortSignal;
 }
 
 /** Pair of navigation states describing where the router is coming from and going to. */

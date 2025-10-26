@@ -54,6 +54,8 @@ export class Router<Renderable> extends EventTarget {
     #outlet: Renderable | null = null;
     #routes: Map<string, { pattern: any; method: string; handler: any }> = new Map();
     #storage: AppStorage;
+    #currentNavigationAbortController: AbortController | null = null;
+    #lastRevalidationTimestamp: number = 0;
 
     /**
      * Latest resolved browser location after the most recent successful navigation.
@@ -215,8 +217,34 @@ export class Router<Renderable> extends EventTarget {
             json?: JsonValue;
             text?: string;
         },
-        options?: { navigate?: boolean },
+        options?: { navigate?: boolean; signal?: AbortSignal; revalidationTimestamp?: number },
     ): Promise<void> {
+        // Only abort in-flight GET navigations, not mutations
+        // Mutations (POST/PUT/DELETE/PATCH) should complete even if user navigates away
+        const isGetNavigation = !submission || submission.formMethod === "GET";
+        if (isGetNavigation && this.#currentNavigationAbortController) {
+            this.#currentNavigationAbortController.abort();
+        }
+
+        // Create a new abort controller for this navigation
+        // If a signal is provided, chain it
+        const navigationController = new AbortController();
+        // Only track GET navigations - mutations should never be auto-aborted
+        if (isGetNavigation) {
+            this.#currentNavigationAbortController = navigationController;
+        }
+
+        // If a signal is provided, listen to it and abort our navigation if it aborts
+        let externalAbortCleanup: (() => void) | undefined;
+        if (options?.signal) {
+            if (options.signal.aborted) {
+                // Already aborted, bail out immediately
+                return;
+            }
+            externalAbortCleanup = events(options.signal, [
+                dom.abort(() => navigationController.abort())
+            ]);
+        }
         // Parse the pathname
         const url = new URL(pathname, window.location.origin);
         const location = {
@@ -226,6 +254,9 @@ export class Router<Renderable> extends EventTarget {
             hash: url.hash,
             href: url.href,
         } as Location;
+
+        // Capture the current location href to detect if user navigates away during this request
+        const hrefAtStart = this.#location.href;
 
         // Set up navigation state
         const fromNavigation = this.#navigating.to;
@@ -276,6 +307,20 @@ export class Router<Renderable> extends EventTarget {
                 submission,
             );
 
+            // Check if this navigation was aborted during the handler call
+            if (navigationController.signal.aborted) {
+                // Still need to dispatch update so UI components know state changed
+                this.#update();
+                externalAbortCleanup?.();
+                return;
+            }
+
+            // If this is a revalidation, check if a newer one has started
+            if (options?.revalidationTimestamp && options.revalidationTimestamp !== this.#lastRevalidationTimestamp) {
+                externalAbortCleanup?.();
+                return;
+            }
+
             // Update outlet with the result
             this.#outlet = result;
             // Only update location for GET requests (navigation)
@@ -300,13 +345,64 @@ export class Router<Renderable> extends EventTarget {
                 from: toNavigation,
             };
             this.#update();
+
+            // Clear the current navigation controller if this is still the active one
+            if (isGetNavigation && this.#currentNavigationAbortController === navigationController) {
+                this.#currentNavigationAbortController = null;
+            }
+
+            // Cleanup external abort listener
+            externalAbortCleanup?.();
         } catch (error) {
+            // Check if this navigation was aborted
+            if (navigationController.signal.aborted) {
+                // Still need to dispatch update so UI components know state changed
+                this.#update();
+                externalAbortCleanup?.();
+                return;
+            }
+
             // Check if this is a redirect
             if (error && typeof error === "object" && "redirect" in error) {
                 const redirectError = error as { redirect: string; replace: boolean };
-                // Only perform redirect navigation if navigate is not false
+                // Only perform redirect navigation if:
+                // 1. navigate is not false, AND
+                // 2. For mutations, the user hasn't navigated away (location href is still the same), AND
+                // 3. The redirect destination is different from current location
+                const userNavigatedAway = submission && this.#location.href !== hrefAtStart;
+                const redirectUrl = new URL(redirectError.redirect, window.location.origin);
+                const redirectTarget = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
+                const currentPath = this.#location.pathname + this.#location.search + this.#location.hash;
+                const alreadyAtDestination = redirectTarget === currentPath;
+
                 if (options?.navigate !== false) {
-                    await this.navigate(redirectError.redirect, { replace: redirectError.replace });
+                    if (!userNavigatedAway) {
+                        if (alreadyAtDestination) {
+                            // React Router style: revalidate current page instead of redirecting to same page
+                            // Track timestamp to prevent stale revalidations from committing
+                            const revalidationTimestamp = Date.now();
+                            this.#lastRevalidationTimestamp = revalidationTimestamp;
+                            await this.#goto(
+                                window.location.pathname + window.location.search + window.location.hash,
+                                undefined,
+                                { revalidationTimestamp }
+                            );
+                        } else {
+                            await this.navigate(redirectError.redirect, {
+                                replace: redirectError.replace,
+                                signal: options?.signal,
+                            });
+                        }
+                    } else {
+                        // User navigated away during mutation - revalidate current page to update shared data (like sidebar)
+                        const revalidationTimestamp = Date.now();
+                        this.#lastRevalidationTimestamp = revalidationTimestamp;
+                        await this.#goto(
+                            this.#location.pathname + this.#location.search + this.#location.hash,
+                            undefined,
+                            { revalidationTimestamp }
+                        );
+                    }
                 }
                 return;
             }
@@ -328,6 +424,15 @@ export class Router<Renderable> extends EventTarget {
                 from: toNavigation,
             };
             this.#update();
+
+            // Clear the current navigation controller if this is still the active one
+            if (isGetNavigation && this.#currentNavigationAbortController === navigationController) {
+                this.#currentNavigationAbortController = null;
+            }
+
+            // Cleanup external abort listener
+            externalAbortCleanup?.();
+
             throw error;
         }
     }
@@ -557,7 +662,7 @@ export class Router<Renderable> extends EventTarget {
         }
 
         // Perform navigation
-        await this.#goto(pathname);
+        await this.#goto(pathname, undefined, { signal: options.signal });
     }
 
     /**
@@ -650,7 +755,7 @@ export class Router<Renderable> extends EventTarget {
                 json,
                 text,
             },
-            { navigate: options.navigate },
+            { navigate: options.navigate, signal: options.signal },
         );
     }
 
