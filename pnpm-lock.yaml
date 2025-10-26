@@ -90,6 +90,43 @@ importers:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.19(jiti@2.6.1)
 
+  examples/crank/contacts-async-iterator:
+    dependencies:
+      '@b9g/crank':
+        specifier: catalog:crank
+        version: 0.7.2
+      '@remix-run/events':
+        specifier: catalog:remix
+        version: 0.0.0-experimental-remix-jam.5
+      '@remix-run/fetch-router':
+        specifier: catalog:remix
+        version: 0.6.0
+      '@std/assert':
+        specifier: catalog:std
+        version: '@jsr/std__assert@1.0.15'
+      '@std/async':
+        specifier: catalog:std
+        version: '@jsr/std__async@1.0.15'
+      '@webstd-ui/router':
+        specifier: workspace:*
+        version: link:../../../packages/router
+      match-sorter:
+        specifier: 'catalog:'
+        version: 8.1.0
+      sort-by:
+        specifier: 'catalog:'
+        version: 1.2.0
+    devDependencies:
+      '@biomejs/biome':
+        specifier: catalog:tools
+        version: 2.3.0
+      '@typescript/native-preview':
+        specifier: catalog:tools
+        version: 7.0.0-dev.20251026.1
+      vite:
+        specifier: npm:rolldown-vite@latest
+        version: rolldown-vite@7.1.19(jiti@2.6.1)
+
   examples/remix/blog:
     dependencies:
       '@remix-run/dom':

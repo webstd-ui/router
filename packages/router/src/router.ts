@@ -333,9 +333,9 @@ export class Router<Renderable> extends EventTarget {
 
             // Update outlet with the result
             this.#outlet = result;
-            // Only update location for GET requests (navigation)
+            // Only update location for GET requests (navigation and GET form submissions)
             // For non-GET requests (mutations), keep the current location
-            if (!submission) {
+            if (!submission || submission.formMethod === "GET") {
                 this.#location = location;
             }
 
