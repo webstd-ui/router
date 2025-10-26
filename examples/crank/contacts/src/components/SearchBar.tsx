@@ -49,7 +49,7 @@ export function* SearchBar(this: Context<{ query?: string }>, _props: { query?: 
                     type="search"
                 />
                 <div aria-hidden hidden={!searching} id="search-spinner" />
-                <div aria-live="polite" className="sr-only" />
+                <div aria-live="polite" class="sr-only" />
             </form>
         );
     }
