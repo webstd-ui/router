@@ -7,11 +7,11 @@
         "@remix-run/events": "catalog:remix",
         "@remix-run/fetch-router": "catalog:remix",
         "@remix-run/style": "catalog:remix",
-        "@std/assert": "jsr:^1.0.15",
-        "@std/async": "jsr:^1.0.15",
+        "@std/assert": "catalog:std",
+        "@std/async": "catalog:std",
         "@webstd-ui/router": "workspace:*",
-        "match-sorter": "^8.1.0",
-        "sort-by": "^1.2.0"
+        "match-sorter": "catalog:",
+        "sort-by": "catalog:"
     },
     "devDependencies": {
         "@biomejs/biome": "catalog:tools",

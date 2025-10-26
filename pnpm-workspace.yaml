@@ -2,6 +2,10 @@ packages:
     - "examples/*"
     - "packages/router"
 
+catalog:
+    match-sorter: ^8.1.0
+    sort-by: ^1.2.0
+
 catalogs:
     remix:
         "@remix-run/dom": jam
@@ -14,6 +18,11 @@ catalogs:
         "@remix-run/lazy-file": latest
         "@remix-run/node-fetch-server": latest
         "@remix-run/route-pattern": latest
+    crank:
+        "@b9g/crank": ^0.7.2
+    std:
+        "@std/assert": jsr:^1.0.15
+        "@std/async": jsr:^1.0.15
     dev:
         vite: npm:rolldown-vite@latest
         tsdown: ^0.15.7
