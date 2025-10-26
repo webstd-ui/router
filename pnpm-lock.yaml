@@ -5,6 +5,17 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
+  crank:
+    '@b9g/crank':
+      specifier: ^0.7.2
+      version: 0.7.2
+  default:
+    match-sorter:
+      specifier: ^8.1.0
+      version: 8.1.0
+    sort-by:
+      specifier: ^1.2.0
+      version: 1.2.0
   dev:
     tsdown:
       specifier: ^0.15.7
@@ -22,6 +33,13 @@ catalogs:
     '@remix-run/style':
       specifier: jam
       version: 0.0.0-experimental-remix-jam.5
+  std:
+    '@std/assert':
+      specifier: jsr:^1.0.15
+      version: 1.0.15
+    '@std/async':
+      specifier: jsr:^1.0.15
+      version: 1.0.15
   tools:
     '@biomejs/biome':
       specifier: ^2.3.0
@@ -35,7 +53,44 @@ overrides:
 
 importers:
 
-  examples/blog:
+  examples/crank/contacts:
+    dependencies:
+      '@b9g/crank':
+        specifier: catalog:crank
+        version: 0.7.2
+      '@remix-run/events':
+        specifier: catalog:remix
+        version: 0.0.0-experimental-remix-jam.5
+      '@remix-run/fetch-router':
+        specifier: catalog:remix
+        version: 0.6.0
+      '@std/assert':
+        specifier: catalog:std
+        version: '@jsr/std__assert@1.0.15'
+      '@std/async':
+        specifier: catalog:std
+        version: '@jsr/std__async@1.0.15'
+      '@webstd-ui/router':
+        specifier: workspace:*
+        version: link:../../../packages/router
+      match-sorter:
+        specifier: 'catalog:'
+        version: 8.1.0
+      sort-by:
+        specifier: 'catalog:'
+        version: 1.2.0
+    devDependencies:
+      '@biomejs/biome':
+        specifier: catalog:tools
+        version: 2.3.0
+      '@typescript/native-preview':
+        specifier: catalog:tools
+        version: 7.0.0-dev.20251026.1
+      vite:
+        specifier: npm:rolldown-vite@latest
+        version: rolldown-vite@7.1.19(jiti@2.6.1)
+
+  examples/remix/blog:
     dependencies:
       '@remix-run/dom':
         specifier: catalog:remix
@@ -51,19 +106,19 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@webstd-ui/router':
         specifier: workspace:*
-        version: link:../../packages/router
+        version: link:../../../packages/router
     devDependencies:
       '@biomejs/biome':
         specifier: catalog:tools
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251025.1
+        version: 7.0.0-dev.20251026.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.19(jiti@2.6.1)
 
-  examples/contacts:
+  examples/remix/contacts:
     dependencies:
       '@remix-run/dom':
         specifier: catalog:remix
@@ -78,19 +133,19 @@ importers:
         specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
       '@std/assert':
-        specifier: jsr:^1.0.15
+        specifier: catalog:std
         version: '@jsr/std__assert@1.0.15'
       '@std/async':
-        specifier: jsr:^1.0.15
+        specifier: catalog:std
         version: '@jsr/std__async@1.0.15'
       '@webstd-ui/router':
         specifier: workspace:*
-        version: link:../../packages/router
+        version: link:../../../packages/router
       match-sorter:
-        specifier: ^8.1.0
+        specifier: 'catalog:'
         version: 8.1.0
       sort-by:
-        specifier: ^1.2.0
+        specifier: 'catalog:'
         version: 1.2.0
     devDependencies:
       '@biomejs/biome':
@@ -98,12 +153,12 @@ importers:
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251025.1
+        version: 7.0.0-dev.20251026.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.19(jiti@2.6.1)
 
-  examples/tasks:
+  examples/remix/tasks:
     dependencies:
       '@remix-run/dom':
         specifier: catalog:remix
@@ -118,18 +173,18 @@ importers:
         specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
       '@std/async':
-        specifier: jsr:^1.0.15
+        specifier: catalog:std
         version: '@jsr/std__async@1.0.15'
       '@webstd-ui/router':
         specifier: workspace:*
-        version: link:../../packages/router
+        version: link:../../../packages/router
     devDependencies:
       '@biomejs/biome':
         specifier: catalog:tools
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251025.1
+        version: 7.0.0-dev.20251026.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.19(jiti@2.6.1)
@@ -137,10 +192,10 @@ importers:
   packages/router:
     dependencies:
       '@remix-run/events':
-        specifier: 0.0.0-experimental-remix-jam.5
+        specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
-        specifier: ^0.6.0
+        specifier: catalog:remix
         version: 0.6.0
     devDependencies:
       '@biomejs/biome':
@@ -154,6 +209,9 @@ importers:
         version: 0.15.9(@typescript/native-preview@7.0.0-dev.20251025.1)
 
 packages:
+
+  '@b9g/crank@0.7.2':
+    resolution: {integrity: sha512-LAYzLNcSii2Y3KRnT/rBf3HZx3MXI0kJdM8BLUmY2/758tUmgK8wqWdUSGPkRkBhbm3bhVFFfltC18NMkr+1Ng==}
 
   '@babel/generator@7.28.5':
     resolution: {integrity: sha512-3EwLFhZ38J4VyIP6WNtt2kUdW9dokXA9Cr4IVIFHuCpZ3H8/YFOl5JjZHisrn1fATPBmKKqXzDFvh9fUwHz6CQ==}
@@ -395,8 +453,18 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-mRnlTs2KxVBqWH/ZCaVF9VCQN4pLXfHVXr43azWhnoMuFtwJ1KFpLi5oVkyyltKaHi5NkkrGiXPEE4TPyONhJw==}
+    cpu: [arm64]
+    os: [darwin]
+
   '@typescript/native-preview-darwin-x64@7.0.0-dev.20251025.1':
     resolution: {integrity: sha512-FOQaKGengZXKxO+740vq/Svt2suXizHRgJKCOgoDrUQJQHGwQuKJUrmYGl76lS2njAl++W8j0ujUuZFPW7PU2A==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-25rjU45Dg88BFTpU7bjXI9B93mxPniFfKo37OD4QRxlIdcwK+PfW9vk9hs9HEz0gklE5jXPMoiLgpgfD/ycH5Q==}
     cpu: [x64]
     os: [darwin]
 
@@ -405,8 +473,18 @@ packages:
     cpu: [arm64]
     os: [linux]
 
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-PY+1xQ/t4WZv9WKp6DV3wXxkGeCMq3OIInaLSsX4ekgZfgLC/89JatslwaEggTqrIJHZiihDzK0iR1XnwUxopA==}
+    cpu: [arm64]
+    os: [linux]
+
   '@typescript/native-preview-linux-arm@7.0.0-dev.20251025.1':
     resolution: {integrity: sha512-droErJsgPMF5xkfWKgTjRcE7PzABF+JOsT+OEzYWPB/ytoW6SBhEBliw7ZmeQOyPVkqiqe+LkQCAKf4hAjqtxw==}
+    cpu: [arm]
+    os: [linux]
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-HCxBLDhe6NQHnfiGoRItF+6QDgqK0J6NkdWV5L0chzs/6H9wbiSVnbRxdehXobJ7qq8MtppEtCHYG2z6F56Qmg==}
     cpu: [arm]
     os: [linux]
 
@@ -415,8 +493,18 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-XVNNNgVGQW6zu2auMAxatw0V9jNiC+TLMuKKSOMkju56ZdxQxh9CxnxC5pWa9sFNz74Vw9jaYIu9Hq+ROQi1eA==}
+    cpu: [x64]
+    os: [linux]
+
   '@typescript/native-preview-win32-arm64@7.0.0-dev.20251025.1':
     resolution: {integrity: sha512-H+oUFmoUVnaQ68K48URp/2N3UBwJ7aVq+f9ZtBz4RQ4hhhp2N5ChLbdL0A7HskHTZg96CfG0GfcYcRSwUASu1Q==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-47C2fxxYAsD5Ps1zWbRL7GQ/rg3siFNmLmWmA2nNb2GgJNcRf90nn+Gk8mBssAol3cLNVfyQwWIQNXNR9lNWvQ==}
     cpu: [arm64]
     os: [win32]
 
@@ -425,8 +513,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-DInvE9N7KvMvCaw4ZOftvWKkwdHehVXYxc8wLBYLMNSycLOrSmB/0q1DR5Fr8aZhnWv5qzevDb0xSczmSdovCg==}
+    cpu: [x64]
+    os: [win32]
+
   '@typescript/native-preview@7.0.0-dev.20251025.1':
     resolution: {integrity: sha512-zHLmnunbWGLukprLqARRD4mTVSG2m/mmZMyMqzhhYXLLoR2xQSaUs8/oklkgdQW6+oC6TNUnnymVK/lao2tQBg==}
+    hasBin: true
+
+  '@typescript/native-preview@7.0.0-dev.20251026.1':
+    resolution: {integrity: sha512-WiFWydnIBb73bdK5xuCCXcRcbnyYgmfQ9gQqhF8tq9SMF9XI9cFdosIL0Iet1YgkvOzbnNR3jDvjdWU/35bXQw==}
     hasBin: true
 
   ansis@4.2.0:
@@ -742,6 +839,8 @@ packages:
 
 snapshots:
 
+  '@b9g/crank@0.7.2': {}
+
   '@babel/generator@7.28.5':
     dependencies:
       '@babel/parser': 7.28.5
@@ -933,22 +1032,43 @@ snapshots:
   '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251025.1':
     optional: true
 
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251026.1':
+    optional: true
+
   '@typescript/native-preview-darwin-x64@7.0.0-dev.20251025.1':
+    optional: true
+
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251026.1':
     optional: true
 
   '@typescript/native-preview-linux-arm64@7.0.0-dev.20251025.1':
     optional: true
 
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251026.1':
+    optional: true
+
   '@typescript/native-preview-linux-arm@7.0.0-dev.20251025.1':
+    optional: true
+
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251026.1':
     optional: true
 
   '@typescript/native-preview-linux-x64@7.0.0-dev.20251025.1':
     optional: true
 
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251026.1':
+    optional: true
+
   '@typescript/native-preview-win32-arm64@7.0.0-dev.20251025.1':
     optional: true
 
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251026.1':
+    optional: true
+
   '@typescript/native-preview-win32-x64@7.0.0-dev.20251025.1':
+    optional: true
+
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251026.1':
     optional: true
 
   '@typescript/native-preview@7.0.0-dev.20251025.1':
@@ -960,6 +1080,16 @@ snapshots:
       '@typescript/native-preview-linux-x64': 7.0.0-dev.20251025.1
       '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251025.1
       '@typescript/native-preview-win32-x64': 7.0.0-dev.20251025.1
+
+  '@typescript/native-preview@7.0.0-dev.20251026.1':
+    optionalDependencies:
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20251026.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20251026.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20251026.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20251026.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20251026.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251026.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20251026.1
 
   ansis@4.2.0: {}
 

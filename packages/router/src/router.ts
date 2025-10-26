@@ -196,10 +196,10 @@ export class Router<Renderable> extends EventTarget {
         // Include submitter to capture button values
         const formData = new FormData(form, event.submitter);
         let method = form.method.toUpperCase();
-        const methodOverride = formData.get("_method");
+        const methodOverride = formData.get("webstd-ui:method");
         if (methodOverride && typeof methodOverride === "string") {
             method = methodOverride.toUpperCase();
-            formData.delete("_method");
+            formData.delete("webstd-ui:method");
         }
 
         this.submit(form, { method: method as FormMethod });
@@ -732,7 +732,7 @@ export class Router<Renderable> extends EventTarget {
 
                         await this.submit(formData, {
                             action: event.currentTarget.action,
-                            method: (formData.get("rmx-method") ??
+                            method: (formData.get("webstd-ui:method") ??
                                 event.currentTarget.method) as HTMLFormMethod,
                         });
                         if (signal?.aborted) return;

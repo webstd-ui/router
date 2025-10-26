@@ -1,0 +1,20 @@
+{
+    "name": "crank-contacts",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@b9g/crank": "catalog:crank",
+        "@remix-run/events": "catalog:remix",
+        "@remix-run/fetch-router": "catalog:remix",
+        "@std/assert": "catalog:std",
+        "@std/async": "catalog:std",
+        "@webstd-ui/router": "workspace:*",
+        "match-sorter": "catalog:",
+        "sort-by": "catalog:"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "catalog:tools",
+        "@typescript/native-preview": "catalog:tools",
+        "vite": "catalog:dev"
+    }
+}
