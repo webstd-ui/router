@@ -89,6 +89,14 @@ export class Router<Renderable> extends EventTarget {
         return this.#storage;
     }
 
+    /**
+     * The current location as a URL object.
+     * Provides convenient access to search params and other URL properties.
+     */
+    get url(): URL {
+        return new URL(this.#location.href);
+    }
+
     #started = false;
 
     /**
@@ -175,8 +183,8 @@ export class Router<Renderable> extends EventTarget {
     });
 
     #handleSubmit = doc.submit(event => {
-        // Don't handle if preventDefault was already called or propagation was stopped
-        if (event.defaultPrevented || event.cancelBubble) {
+        // Don't handle if preventDefault was already called
+        if (event.defaultPrevented) {
             return;
         }
 
@@ -242,7 +250,7 @@ export class Router<Renderable> extends EventTarget {
                 return;
             }
             externalAbortCleanup = events(options.signal, [
-                dom.abort(() => navigationController.abort())
+                dom.abort(() => navigationController.abort()),
             ]);
         }
         // Parse the pathname
@@ -309,14 +317,16 @@ export class Router<Renderable> extends EventTarget {
 
             // Check if this navigation was aborted during the handler call
             if (navigationController.signal.aborted) {
-                // Still need to dispatch update so UI components know state changed
-                this.#update();
+                // Don't call this.#update() - the navigation that aborted this one already updated state
                 externalAbortCleanup?.();
                 return;
             }
 
             // If this is a revalidation, check if a newer one has started
-            if (options?.revalidationTimestamp && options.revalidationTimestamp !== this.#lastRevalidationTimestamp) {
+            if (
+                options?.revalidationTimestamp &&
+                options.revalidationTimestamp !== this.#lastRevalidationTimestamp
+            ) {
                 externalAbortCleanup?.();
                 return;
             }
@@ -347,7 +357,10 @@ export class Router<Renderable> extends EventTarget {
             this.#update();
 
             // Clear the current navigation controller if this is still the active one
-            if (isGetNavigation && this.#currentNavigationAbortController === navigationController) {
+            if (
+                isGetNavigation &&
+                this.#currentNavigationAbortController === navigationController
+            ) {
                 this.#currentNavigationAbortController = null;
             }
 
@@ -356,8 +369,7 @@ export class Router<Renderable> extends EventTarget {
         } catch (error) {
             // Check if this navigation was aborted
             if (navigationController.signal.aborted) {
-                // Still need to dispatch update so UI components know state changed
-                this.#update();
+                // Don't call this.#update() - the navigation that aborted this one already updated state
                 externalAbortCleanup?.();
                 return;
             }
@@ -372,7 +384,8 @@ export class Router<Renderable> extends EventTarget {
                 const userNavigatedAway = submission && this.#location.href !== hrefAtStart;
                 const redirectUrl = new URL(redirectError.redirect, window.location.origin);
                 const redirectTarget = redirectUrl.pathname + redirectUrl.search + redirectUrl.hash;
-                const currentPath = this.#location.pathname + this.#location.search + this.#location.hash;
+                const currentPath =
+                    this.#location.pathname + this.#location.search + this.#location.hash;
                 const alreadyAtDestination = redirectTarget === currentPath;
 
                 if (options?.navigate !== false) {
@@ -383,9 +396,11 @@ export class Router<Renderable> extends EventTarget {
                             const revalidationTimestamp = Date.now();
                             this.#lastRevalidationTimestamp = revalidationTimestamp;
                             await this.#goto(
-                                window.location.pathname + window.location.search + window.location.hash,
+                                window.location.pathname +
+                                    window.location.search +
+                                    window.location.hash,
                                 undefined,
-                                { revalidationTimestamp }
+                                { revalidationTimestamp },
                             );
                         } else {
                             await this.navigate(redirectError.redirect, {
@@ -400,7 +415,7 @@ export class Router<Renderable> extends EventTarget {
                         await this.#goto(
                             this.#location.pathname + this.#location.search + this.#location.hash,
                             undefined,
-                            { revalidationTimestamp }
+                            { revalidationTimestamp },
                         );
                     }
                 }
@@ -426,7 +441,10 @@ export class Router<Renderable> extends EventTarget {
             this.#update();
 
             // Clear the current navigation controller if this is still the active one
-            if (isGetNavigation && this.#currentNavigationAbortController === navigationController) {
+            if (
+                isGetNavigation &&
+                this.#currentNavigationAbortController === navigationController
+            ) {
                 this.#currentNavigationAbortController = null;
             }
 
@@ -650,7 +668,8 @@ export class Router<Renderable> extends EventTarget {
      */
     async navigate(to: To, options: NavigateOptions = {}): Promise<void> {
         const pathname = this.#resolveTo(to);
-        const currentPath = window.location.pathname + window.location.search + window.location.hash;
+        const currentPath =
+            window.location.pathname + window.location.search + window.location.hash;
 
         // Update history only if the path is different
         if (pathname !== currentPath) {
