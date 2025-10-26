@@ -1,6 +1,7 @@
 import type { Remix } from "@remix-run/dom";
 import { dom } from "@remix-run/events";
-import { routes } from "~/routes/mod";
+import { routes } from "~/routes/index.ts";
+import { HttpMethod, RestfulForm } from "./RestfulForm.tsx";
 
 export function DeleteButton(this: Remix.Handle) {
     const submit = dom.submit(event => {
@@ -10,14 +11,13 @@ export function DeleteButton(this: Remix.Handle) {
     });
 
     return ({ id }: { id: string }) => (
-        <form
+        <RestfulForm
             action={routes.contact.destroy.href({ contactId: id })}
             data-destroy
-            method="post"
+            method={HttpMethod.Delete}
             on={submit}
         >
-            <input name="_method" type="hidden" value="DELETE" />
             <button type="submit">Delete</button>
-        </form>
+        </RestfulForm>
     );
 }

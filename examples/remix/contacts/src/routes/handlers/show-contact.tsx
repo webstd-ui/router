@@ -2,8 +2,9 @@ import type { InferRouteHandler } from "@remix-run/fetch-router";
 import { render } from "@webstd-ui/router";
 import { DeleteButton } from "~/components/DeleteButton.tsx";
 import { Favorite } from "~/components/Favorite.tsx";
+import { RestfulForm } from "~/components/RestfulForm.tsx";
 import { CONTACTS_KEY, getContact, getContacts } from "~/lib/contacts.ts";
-import { routes } from "~/routes/mod";
+import { routes } from "~/routes";
 
 export const show: InferRouteHandler<typeof routes.contact.show> = async ({
     params,
@@ -58,13 +59,13 @@ export const show: InferRouteHandler<typeof routes.contact.show> = async ({
                 {contact.notes && <p>{contact.notes}</p>}
 
                 <div>
-                    <form
+                    <RestfulForm
                         action={routes.contact.edit.href({
                             contactId: contact.id,
                         })}
                     >
                         <button type="submit">Edit</button>
-                    </form>
+                    </RestfulForm>
                     <DeleteButton id={contact.id} />
                 </div>
             </div>

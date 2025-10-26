@@ -1,8 +1,9 @@
 import type { InferRouteHandler } from "@remix-run/fetch-router";
 import { render } from "@webstd-ui/router";
 import { CancelButton } from "~/components/CancelButton.tsx";
+import { RestfulForm } from "~/components/RestfulForm.tsx";
 import { CONTACTS_KEY, getContact, getContacts } from "~/lib/contacts.ts";
-import { routes } from "~/routes/mod";
+import { routes } from "~/routes";
 
 export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
     params,
@@ -16,12 +17,11 @@ export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
     const contact = (await getContact(params.contactId))!;
 
     return render(
-        <form
+        <RestfulForm
             action={routes.contact.update.href({ contactId: params.contactId })}
             id="contact-form"
-            method="post"
+            method="PUT"
         >
-            <input name="_method" type="hidden" value="PUT" />
             <p>
                 <span>Name</span>
                 <input
@@ -66,6 +66,6 @@ export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
                 <button type="submit">Save</button>
                 <CancelButton />
             </p>
-        </form>,
+        </RestfulForm>,
     );
 };

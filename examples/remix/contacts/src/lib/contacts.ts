@@ -310,6 +310,6 @@ const fakeCache = new Map<string, boolean>();
 export async function fakeNetwork(key?: string): Promise<void> {
     if (!key || !fakeCache.get(key)) {
         if (key) fakeCache.set(key, true);
-        await sleep(Math.random() * 2000);
+        await sleep(500 + Math.random() * 1500);
     }
 }

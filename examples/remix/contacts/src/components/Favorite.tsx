@@ -1,6 +1,7 @@
 import type { Remix } from "@remix-run/dom";
 import { App } from "~/app.tsx";
-import { routes } from "~/routes/mod";
+import { routes } from "~/routes/index.ts";
+import { HttpMethod, RestfulForm } from "./RestfulForm.tsx";
 
 export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: string }) {
     const router = this.context.get(App);
@@ -17,9 +18,9 @@ export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: str
         const favorite = optimisticFavorite !== null ? optimisticFavorite : props.favorite;
 
         return (
-            <form
+            <RestfulForm
                 action={routes.contact.favorite.href({ contactId: props.id })}
-                method="POST"
+                method={HttpMethod.Put}
                 on={router.optimistic(
                     event => {
                         optimisticFavorite = event.detail
@@ -31,7 +32,6 @@ export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: str
                     { signal: this.signal },
                 )}
             >
-                <input name="rmx-method" type="hidden" value="PUT" />
                 <button
                     aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
                     name="favorite"
@@ -40,7 +40,7 @@ export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: str
                 >
                     {favorite ? "★" : "☆"}
                 </button>
-            </form>
+            </RestfulForm>
         );
     };
 }
