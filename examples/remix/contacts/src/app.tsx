@@ -1,4 +1,5 @@
 import type { Remix } from "@remix-run/dom";
+import { events } from "@remix-run/events";
 import { Router } from "@webstd-ui/router";
 import { Details } from "./components/Details.tsx";
 import { HttpMethod, RestfulForm } from "./components/RestfulForm.tsx";
@@ -14,6 +15,14 @@ export function App(this: Remix.Handle<RemixRouter>) {
     const router: RemixRouter = new Router();
     router.map(routes, handlers);
     this.context.set(router);
+
+    events(router, [
+        Router.update(() =>
+            console.log(
+                `[ROUTER-UPDATE]: ${JSON.stringify({ currentPathname: router.url.pathname })}`,
+            ),
+        ),
+    ]);
 
     let isLoading = true;
 

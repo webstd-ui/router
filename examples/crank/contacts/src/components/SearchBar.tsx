@@ -2,37 +2,39 @@ import type { Context } from "@b9g/crank";
 import { events } from "@remix-run/events";
 import { Router } from "@webstd-ui/router";
 import { ROUTER } from "~/app.tsx";
-import { RestfulForm } from "./RestfulForm.tsx";
 
-export function* SearchBar(this: Context<{ query?: string }>, _props: { query?: string }) {
+export function* SearchBar(this: Context) {
     const router = this.consume(ROUTER);
     const cleanup = events(router, [Router.update(() => this.refresh())]);
 
-    let previousQuery = this.props.query;
     let input: HTMLInputElement | undefined;
+    const query = () =>
+        router.url.searchParams.get("q") ? router.url.searchParams.get("q") : undefined;
+    let previousQuery = query();
 
     const handleInput = (event: Event & { currentTarget: HTMLInputElement }) => {
         // Remove empty query params when value is empty
         if (!event.currentTarget.value) {
-            router.navigate(router.location.pathname + router.location.hash);
+            router.navigate(router.url.pathname + router.url.hash);
             return;
         }
 
-        const isFirstSearch = this.props.query === undefined;
+        const isFirstSearch = previousQuery === undefined;
+
         // Simulate <form method="GET"> programatically
         // Adds <input name value>s as search params to URL
         // Also performs a client-side navigation
         router.submit(event.currentTarget.form, {
             replace: !isFirstSearch,
         });
+
+        // Update previousQuery immediately so next input sees the current value
+        if (event.currentTarget.value !== previousQuery) {
+            previousQuery = event.currentTarget.value;
+        }
     };
 
-    for (const { query } of this) {
-        if (query !== previousQuery) {
-            previousQuery = query;
-            if (input) input.value = query ?? "";
-        }
-
+    for (const _ of this) {
         const searching = Boolean(router.navigating.to.url?.searchParams.has("q"));
 
         yield (
@@ -40,7 +42,7 @@ export function* SearchBar(this: Context<{ query?: string }>, _props: { query?: 
                 <input
                     aria-label="Search contacts"
                     class={searching ? "loading" : ""}
-                    defaultValue={query ?? ""}
+                    defaultValue={query() ?? ""}
                     id="q"
                     name="q"
                     oninput={handleInput}

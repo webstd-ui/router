@@ -4,12 +4,14 @@ import { Router } from "@webstd-ui/router";
 import { App } from "~/app.tsx";
 import { RestfulForm } from "./RestfulForm.tsx";
 
-export function SearchBar(this: Remix.Handle, props: { query?: string }) {
+export function SearchBar(this: Remix.Handle) {
     const router = this.context.get(App);
     events(router, [Router.update(() => this.update(), { signal: this.signal })]);
 
-    let previousQuery = props.query;
     let input: HTMLInputElement;
+    const query = () =>
+        router.url.searchParams.get("q") ? router.url.searchParams.get("q") : undefined;
+    let previousQuery = query();
 
     const handleInput = dom.input<HTMLInputElement>(async event => {
         // Remove empty query params when value is empty
@@ -18,21 +20,22 @@ export function SearchBar(this: Remix.Handle, props: { query?: string }) {
             return;
         }
 
-        const isFirstSearch = props.query === undefined;
+        const isFirstSearch = previousQuery === undefined;
+
         // Simulate <form method="GET"> programatically
         // Adds <input name value>s as search params to URL
         // Also performs a client-side navigation
         router.submit(event.currentTarget.form, {
             replace: !isFirstSearch,
         });
+
+        // Update previousQuery immediately so next input sees the current value
+        if (event.currentTarget.value !== previousQuery) {
+            previousQuery = event.currentTarget.value;
+        }
     });
 
-    return ({ query }: { query?: string }) => {
-        if (query !== previousQuery) {
-            previousQuery = query;
-            if (input) input.value = query ?? "";
-        }
-
+    return () => {
         const searching = Boolean(router.navigating.to.url?.searchParams.has("q"));
 
         return (
@@ -40,7 +43,7 @@ export function SearchBar(this: Remix.Handle, props: { query?: string }) {
                 <input
                     aria-label="Search contacts"
                     class={searching ? "loading" : ""}
-                    defaultValue={query}
+                    defaultValue={query() ?? ""}
                     id="q"
                     name="q"
                     on={[handleInput, connect(event => (input = event.currentTarget))]}

@@ -9,15 +9,16 @@ export function Sidebar(this: Remix.Handle) {
     const router = this.context.get(App);
     events(router, [Router.update(() => this.update(), { signal: this.signal })]);
 
-    const contacts = () => router.storage.get(CONTACTS_KEY) || [];
-
     return () => {
-        const c = contacts();
+        const contacts = router.storage.get(CONTACTS_KEY) || [];
+
+        console.log(`[CONTACTS]: ${contacts.map(c => `${c.first}-${c.last}`).join(", ")}`);
+
         return (
             <nav>
-                {c.length ? (
+                {contacts.length ? (
                     <ul>
-                        {c.map(contact => (
+                        {contacts.map(contact => (
                             <SidebarItem contact={contact} key={contact.id} />
                         ))}
                     </ul>

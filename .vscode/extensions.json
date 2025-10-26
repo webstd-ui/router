@@ -1,11 +1,11 @@
 {
-	"recommendations": [
-		"biomejs.biome",
-		"github.vscode-github-actions",
-		"GitHub.vscode-pull-request-github",
-		"hverlin.mise-vscode",
-		"tamasfe.even-better-toml",
-		"wayou.vscode-todo-highlight",
-		"redhat.vscode-yaml"
-	]
+    "recommendations": [
+        "biomejs.biome",
+        "github.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "hverlin.mise-vscode",
+        "tamasfe.even-better-toml",
+        "wayou.vscode-todo-highlight",
+        "redhat.vscode-yaml"
+    ]
 }
