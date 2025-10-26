@@ -16,14 +16,6 @@ export function App(this: Remix.Handle<RemixRouter>) {
     router.map(routes, handlers);
     this.context.set(router);
 
-    events(router, [
-        Router.update(() =>
-            console.log(
-                `[ROUTER-UPDATE]: ${JSON.stringify({ currentPathname: router.url.pathname })}`,
-            ),
-        ),
-    ]);
-
     let isLoading = true;
 
     this.queueTask(async () => {

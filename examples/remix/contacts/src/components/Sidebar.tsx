@@ -12,8 +12,6 @@ export function Sidebar(this: Remix.Handle) {
     return () => {
         const contacts = router.storage.get(CONTACTS_KEY) || [];
 
-        console.log(`[CONTACTS]: ${contacts.map(c => `${c.first}-${c.last}`).join(", ")}`);
-
         return (
             <nav>
                 {contacts.length ? (
