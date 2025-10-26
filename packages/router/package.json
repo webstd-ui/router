@@ -1,6 +1,6 @@
 {
     "name": "@webstd-ui/router",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "A framework-agnostic client-side router built on @remix-run/fetch-router and @remix-run/events",
     "keywords": [
         "router",
