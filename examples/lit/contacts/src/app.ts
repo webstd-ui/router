@@ -4,12 +4,9 @@ import { css, html, LitElement } from 'lit';
 import { CONTACTS_KEY, getContacts } from './lib/contacts.ts';
 import { handlers } from './routes/handlers';
 import { routes } from './routes';
-import { createContext, provide } from '@lit/context';
 import { formControlStyles } from './styles.ts';
 
 export type LitRouter = Router<TemplateResult>;
-
-export const ROUTER_KEY = createContext<LitRouter | undefined>('@webstd-ui/router');
 
 export class App extends LitElement {
     static tag = 'app-main';
@@ -31,6 +28,7 @@ export class App extends LitElement {
                 flex: 1;
                 height: 100%;
                 width: 100%;
+                overflow: hidden;
             }
 
             #sidebar {
@@ -91,8 +89,7 @@ export class App extends LitElement {
         `,
     ];
 
-    @provide({ context: ROUTER_KEY })
-    public accessor router: LitRouter = new Router();
+    public router: LitRouter = new Router();
 
     public constructor() {
         super();
@@ -101,7 +98,7 @@ export class App extends LitElement {
 
     private isLoading = true;
 
-    private async loadContacts() {
+    private async load() {
         // Load initial data into storage
         const contacts = await getContacts();
         this.router.storage.set(CONTACTS_KEY, contacts);
@@ -112,7 +109,7 @@ export class App extends LitElement {
 
     public connectedCallback() {
         super.connectedCallback();
-        this.loadContacts();
+        this.load();
     }
 
     public render() {
@@ -121,21 +118,23 @@ export class App extends LitElement {
         }
 
         return html`
-            <div id="sidebar">
-                <h1>Lit Contacts</h1>
-                <div>
-                    <app-search-bar></app-search-bar>
-                    <router-form>
-                        <form action=${routes.contact.create.href()} method="post">
-                            <button type="submit">New</button>
-                        </form>
-                    </router-form>
+            <router-provider .router=${this.router}>
+                <div id="sidebar">
+                    <h1>Lit Contacts</h1>
+                    <div>
+                        <app-search-bar></app-search-bar>
+                        <router-form>
+                            <form action=${routes.contact.create.href()} method="post">
+                                <button type="submit">New</button>
+                            </form>
+                        </router-form>
+                    </div>
+                    <nav>
+                        <app-sidebar></app-sidebar>
+                    </nav>
                 </div>
-                <nav>
-                    <app-sidebar></app-sidebar>
-                </nav>
-            </div>
-            <app-details></app-details>
+                <app-details></app-details>
+            </router-provider>
         `;
     }
 }
