@@ -1,6 +1,6 @@
+import { dom } from "@remix-run/events";
 import type { InferRouteHandler } from "@remix-run/fetch-router";
 import { render } from "@webstd-ui/router";
-import { CancelButton } from "~/components/CancelButton.tsx";
 import { RestfulForm } from "~/components/RestfulForm.tsx";
 import { CONTACTS_KEY, getContact, getContacts } from "~/lib/contacts.ts";
 import { routes } from "~/routes";
@@ -20,7 +20,7 @@ export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
         <RestfulForm
             action={routes.contact.update.href({ contactId: params.contactId })}
             id="contact-form"
-            method="PUT"
+            method="put"
         >
             <p>
                 <span>Name</span>
@@ -64,8 +64,10 @@ export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
             </label>
             <p>
                 <button type="submit">Save</button>
-                <CancelButton />
+                <button on={dom.click(() => history.back())} type="button">
+                    Cancel
+                </button>
             </p>
-        </RestfulForm>,
+        </RestfulForm>
     );
 };

@@ -1,16 +1,21 @@
 import type { Remix } from "@remix-run/dom";
+import { App } from "~/app.tsx";
 
-export const enum HttpMethod {
-    Get = "GET",
-    Head = "HEAD",
-    Post = "POST",
-    Put = "PUT",
-    Delete = "DELETE",
-    Connect = "CONNECT",
-    Options = "OPTIONS",
-    Trace = "TRACE",
-    Patch = "PATCH",
-}
+const FormMethod = {
+    Get: "get" as HttpMethod,
+    Post: "post" as HttpMethod,
+};
+
+export type HttpMethod =
+    | "get"
+    | "head"
+    | "post"
+    | "put"
+    | "delete"
+    | "connect"
+    | "options"
+    | "trace"
+    | "patch";
 
 export namespace RestfulForm {
     export interface Props extends Omit<Remix.Props<"form">, "method"> {
@@ -18,23 +23,26 @@ export namespace RestfulForm {
     }
 }
 
-export function RestfulForm(this: Remix.Handle, { method, ...props }: RestfulForm.Props) {
-    let canonicalMethod = HttpMethod.Get;
-    let formMethod: HttpMethod = canonicalMethod;
-
-    if (method) {
-        canonicalMethod = method;
-        formMethod = canonicalMethod !== HttpMethod.Get ? HttpMethod.Post : HttpMethod.Get;
-    }
-
-    const needsHiddenInput = ![HttpMethod.Get, HttpMethod.Post].includes(canonicalMethod);
+export function RestfulForm({ method, ...props }: RestfulForm.Props) {
+    const canonical = method ?? FormMethod.Get;
+    const effective = canonical !== FormMethod.Get ? FormMethod.Post : FormMethod.Get;
+    const needsHiddenInput = effective !== canonical;
 
     return (
-        <form {...props} method={formMethod}>
-            {needsHiddenInput && (
-                <input name="webstd-ui:method" type="hidden" value={canonicalMethod} />
-            )}
+        <form {...props} method={effective}>
+            {needsHiddenInput && <input name="webstd-ui:method" type="hidden" value={canonical} />}
             {props.children}
         </form>
+    );
+}
+
+// Use when you've disabled global enhancement in the Router constructor options
+export function EnhancedRestfulForm(this: Remix.Handle, props: RestfulForm.Props) {
+    const router = this.context.get(App);
+
+    return (
+        <RestfulForm {...props} on={router.enhanceForm({ signal: this.signal })}>
+            {props.children}
+        </RestfulForm>
     );
 }

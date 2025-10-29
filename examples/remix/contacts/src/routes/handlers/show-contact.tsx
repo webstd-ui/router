@@ -1,6 +1,6 @@
+import { dom } from "@remix-run/events";
 import type { InferRouteHandler } from "@remix-run/fetch-router";
 import { render } from "@webstd-ui/router";
-import { DeleteButton } from "~/components/DeleteButton.tsx";
 import { Favorite } from "~/components/Favorite.tsx";
 import { RestfulForm } from "~/components/RestfulForm.tsx";
 import { CONTACTS_KEY, getContact, getContacts } from "~/lib/contacts.ts";
@@ -47,7 +47,10 @@ export const show: InferRouteHandler<typeof routes.contact.show> = async ({
                 {contact.twitter && (
                     <p>
                         <a
-                            href={`https://xcancel.com/${contact.twitter.slice(1, contact.twitter.length)}`}
+                            href={`https://xcancel.com/${contact.twitter.slice(
+                                1,
+                                contact.twitter.length
+                            )}`}
                             rel="noreferrer"
                             target="_blank"
                         >
@@ -59,16 +62,26 @@ export const show: InferRouteHandler<typeof routes.contact.show> = async ({
                 {contact.notes && <p>{contact.notes}</p>}
 
                 <div>
-                    <RestfulForm
+                    <form
                         action={routes.contact.edit.href({
                             contactId: contact.id,
                         })}
                     >
                         <button type="submit">Edit</button>
+                    </form>
+                    <RestfulForm
+                        action={routes.contact.destroy.href({ contactId: contact.id })}
+                        method="delete"
+                        on={dom.submit(event => {
+                            if (!confirm("Please confirm you want to delete this record.")) {
+                                event.preventDefault();
+                            }
+                        })}
+                    >
+                        <button type="submit">Delete</button>
                     </RestfulForm>
-                    <DeleteButton id={contact.id} />
                 </div>
             </div>
-        </div>,
+        </div>
     );
 };

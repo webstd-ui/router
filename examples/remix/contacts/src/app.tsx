@@ -1,8 +1,6 @@
 import type { Remix } from "@remix-run/dom";
-import { events } from "@remix-run/events";
 import { Router } from "@webstd-ui/router";
 import { Details } from "./components/Details.tsx";
-import { HttpMethod, RestfulForm } from "./components/RestfulForm.tsx";
 import { SearchBar } from "./components/SearchBar.tsx";
 import { Sidebar } from "./components/Sidebar.tsx";
 import { CONTACTS_KEY, getContacts } from "./lib/contacts.ts";
@@ -29,7 +27,7 @@ export function App(this: Remix.Handle<RemixRouter>) {
 
     return () => {
         if (isLoading) {
-            return <p>Loading...</p>;
+            return <p class="loading">Loading...</p>;
         }
 
         return (
@@ -38,9 +36,9 @@ export function App(this: Remix.Handle<RemixRouter>) {
                     <h1>Remix Contacts</h1>
                     <div>
                         <SearchBar />
-                        <RestfulForm action={routes.contact.create.href()} method={HttpMethod.Post}>
+                        <form action={routes.contact.create.href()} method="post">
                             <button type="submit">New</button>
-                        </RestfulForm>
+                        </form>
                     </div>
                     <Sidebar />
                 </div>

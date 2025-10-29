@@ -1,35 +1,32 @@
 import type { Remix } from "@remix-run/dom";
 import { App } from "~/app.tsx";
 import { routes } from "~/routes/index.ts";
-import { HttpMethod, RestfulForm } from "./RestfulForm.tsx";
+import { RestfulForm } from "./RestfulForm.tsx";
 
 export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: string }) {
     const router = this.context.get(App);
-    let optimisticFavorite: boolean | null = null;
-    let currentContactId = props.id;
+    let optimistic: boolean | null = null;
+    let currentId = props.id;
 
     return (props: { favorite: boolean; id: string }) => {
         // Reset optimistic state if contact changed
-        if (currentContactId !== props.id) {
-            optimisticFavorite = null;
-            currentContactId = props.id;
+        if (currentId !== props.id) {
+            optimistic = null;
+            currentId = props.id;
         }
 
-        const favorite = optimisticFavorite !== null ? optimisticFavorite : props.favorite;
+        const favorite = optimistic !== null ? optimistic : props.favorite;
 
         return (
             <RestfulForm
                 action={routes.contact.favorite.href({ contactId: props.id })}
-                method={HttpMethod.Put}
-                on={router.optimistic(
-                    event => {
-                        optimisticFavorite = event.detail
-                            ? event.detail?.get("favorite") === "true"
-                            : null;
-
+                method="put"
+                on={router.enhanceForm(
+                    formData => {
+                        optimistic = formData ? formData?.get("favorite") === "true" : null;
                         this.update();
                     },
-                    { signal: this.signal },
+                    { signal: this.signal }
                 )}
             >
                 <button

@@ -1,11 +1,17 @@
 import { events, type EventDescriptor } from '@remix-run/events';
 import { assert } from '@std/assert';
 import { Router } from '@webstd-ui/router';
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { RouterController } from '~/controllers/router-controller.ts';
 
 abstract class EnhancedElement extends LitElement {
+    static styles = css`
+        :host {
+            display: contents;
+        }
+    `;
+
     protected handle!: HTMLAnchorElement | HTMLFormElement;
 
     private routerController = new RouterController(this);
@@ -60,27 +66,13 @@ export class EnhancedLink extends EnhancedElement {
     }
 
     public get isPending(): boolean {
-        return this.router.isPending(this.href);
+        return !this.isActive && this.router.isPending(this.href);
     }
 
     private updateClass() {
-        if (this.isActive) {
-            // If present, remove it
-            this.handle.classList.remove(this.pendingClass);
-            this.handle.classList.add(this.activeClass);
-        } else if (this.isPending) {
-            // If present, remove it
-            this.handle.classList.remove(this.activeClass);
-            this.handle.classList.add(this.pendingClass);
-        } else {
-            [this.activeClass, this.pendingClass].forEach(className =>
-                this.handle.classList.remove(className),
-            );
-
-            if (!this.handle.classList.length) {
-                this.handle.removeAttribute('class');
-            }
-        }
+        if (this.activeClass) this.handle.classList.toggle(this.activeClass, this.isActive);
+        if (this.pendingClass) this.handle.classList.toggle(this.pendingClass, this.isPending);
+        if (!this.handle.classList.length) this.handle.removeAttribute('class');
     }
 
     constructor() {
@@ -91,7 +83,9 @@ export class EnhancedLink extends EnhancedElement {
         super.connectedCallback();
 
         events(this.router, [
-            Router.update(() => this.updateClass(), { signal: this.abortController.signal }),
+            Router.update(() => this.updateClass(), {
+                signal: this.abortController.signal,
+            }),
         ]);
     }
 }

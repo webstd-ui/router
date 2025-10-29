@@ -5,7 +5,6 @@ import { when } from 'lit/directives/when.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { property } from 'lit/decorators.js';
 import { italicStyles } from '~/styles.ts';
-import { on } from '~/directives/on.ts';
 import { RouterController } from '~/controllers/router-controller.ts';
 
 export class Sidebar extends LitElement {

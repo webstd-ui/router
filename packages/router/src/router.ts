@@ -8,6 +8,7 @@ import {
     events,
     win,
 } from "@remix-run/events";
+import { connect } from "@remix-run/dom";
 import { AppStorage, type RouteHandlers, type RouteMap } from "@remix-run/fetch-router";
 import type {
     FormEncType,
@@ -844,12 +845,48 @@ export class Router<Renderable> extends EventTarget {
      * Can be used in combination with the `{ globallyEnhance: false }` Router constructor option.
      *
      * @example
+     * Basic form enhancement:
      * ```tsx
      * <form action={action} on={router.enhanceForm()}>...</form>
      * ```
+     *
+     * @example
+     * Form enhancement with optimistic updates:
+     * ```tsx
+     * <form action={action} on={router.enhanceForm(
+     *   (event) => {
+     *     if (event.detail) {
+     *       // Handle optimistic update with FormData
+     *       console.log('Optimistic update:', event.detail);
+     *     } else {
+     *       // Clear optimistic state (submission completed)
+     *       console.log('Submission complete');
+     *     }
+     *   }
+     * )}>...</form>
+     * ```
      */
-    enhanceForm(options: AddEventListenerOptions = {}): EventDescriptor<HTMLFormElement> {
-        return dom.submit(event => {
+    enhanceForm(
+        handler: (data: FormData | null) => void | Promise<void>,
+        options: AddEventListenerOptions
+    ): EventDescriptor<HTMLFormElement>;
+    enhanceForm(options?: AddEventListenerOptions): EventDescriptor<HTMLFormElement>;
+    enhanceForm(
+        handlerOrOptions?:
+            | ((data: FormData | null) => void | Promise<void>)
+            | AddEventListenerOptions,
+        maybeOptions?: AddEventListenerOptions
+    ): EventDescriptor<HTMLFormElement> {
+        // Determine which overload is being used
+        const hasOptimisticHandler = typeof handlerOrOptions === "function";
+        const optimisticHandler = hasOptimisticHandler
+            ? (handlerOrOptions as (data: FormData | null) => void | Promise<void>)
+            : undefined;
+        const options: AddEventListenerOptions = hasOptimisticHandler
+            ? maybeOptions ?? {}
+            : ((handlerOrOptions ?? {}) as AddEventListenerOptions);
+        // Standard form enhancement without optimistic updates
+        return dom.submit(async event => {
             // Don't handle if preventDefault was already called
             if (event.defaultPrevented) {
                 return;
@@ -879,7 +916,18 @@ export class Router<Renderable> extends EventTarget {
                 formData.delete("webstd-ui:method");
             }
 
-            this.submit(form, { method: method as FormMethod });
+            // Dispatch optimistic update
+            optimisticHandler?.(formData);
+
+            await this.submit(formData, {
+                action: form.action,
+                method: method as FormMethod,
+            });
+
+            if (options.signal?.aborted) return;
+
+            // Clear optimistic state
+            optimisticHandler?.(null);
         }, options);
     }
 
@@ -892,6 +940,11 @@ export class Router<Renderable> extends EventTarget {
      * @example
      * ```tsx
      * <a href={href} on={router.enhanceLink()}>...</a>
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <a href={href} on={router.enhanceLink({ activeClass: 'active', pendingClass: 'loading' })}>...</a>
      * ```
      */
     enhanceLink(options: AddEventListenerOptions = {}): EventDescriptor<HTMLAnchorElement> {
@@ -915,7 +968,7 @@ export class Router<Renderable> extends EventTarget {
                 return;
             }
 
-            const href = anchor.href;
+            const href = anchor.getAttribute("href") ?? anchor.href;
             if (href === "" || href.startsWith("mailto:")) {
                 return;
             }
@@ -933,18 +986,68 @@ export class Router<Renderable> extends EventTarget {
     }
 
     /**
+     * Create an event descriptor that manages active and pending classes on a navigation link.
+     * Unlike {@link enhanceLink}, this method applies classes immediately on mount and keeps
+     * them in sync with router state changes.
+     *
+     * @example
+     * ```tsx
+     * <a href="/about" on={router.navLink({ activeClass: 'active', pendingClass: 'loading' })}>
+     *   About
+     * </a>
+     * ```
+     *
+     * @param styles - Configuration object with activeClass and/or pendingClass
+     * @param options - Optional event listener options (e.g., signal for cleanup)
+     */
+    navLink(
+        styles: { activeClass?: string; pendingClass?: string },
+        options: AddEventListenerOptions = {}
+    ): EventDescriptor<HTMLAnchorElement> {
+        return connect(event => {
+            const anchor = event.currentTarget as HTMLAnchorElement;
+            const targetPath = anchor.pathname + anchor.search + anchor.hash;
+
+            // Helper to update classes based on current state
+            const updateClasses = () => {
+                const active = this.isActive(targetPath);
+                const pending = !active && this.isPending(targetPath);
+
+                const { activeClass, pendingClass } = styles ?? {};
+
+                if (activeClass) anchor.classList.toggle(activeClass, active);
+                if (pendingClass) anchor.classList.toggle(pendingClass, pending);
+
+                // If neither state applies, both toggles above remove their classes.
+                // Drop the attribute entirely if no classes remain.
+                if (!anchor.classList.length) {
+                    anchor.removeAttribute("class");
+                }
+            };
+
+            // Apply initial classes
+            updateClasses();
+
+            // Listen to router updates and return cleanup function
+            return events(this, [Router.update(updateClasses)]);
+        }, options);
+    }
+
+    /**
      * Wrap a form submission handler to emit optimistic updates while the mutation is pending.
      *
      * The returned handler dispatches `rmx:optimistic` events with the submitted {@link FormData}
      * before delegating to {@link Router.submit}, and clears the optimistic state once the
      * submission completes.
      *
+     * @deprecated Use {@link enhanceForm} with a handler parameter instead for the same functionality.
+     *
      * @param handler - Event handler invoked with optimistic payload events.
      * @param options - Optional abort signal to cancel optimistic updates.
      */
     optimistic(
         handler: EventHandler<CustomEvent<FormData | null>, HTMLFormElement>,
-        { signal }: { signal?: AbortSignal }
+        options: AddEventListenerOptions = {}
     ) {
         const optimisticUpdates = createInteraction<HTMLFormElement, FormData | null>(
             "rmx:optimistic",
@@ -963,10 +1066,10 @@ export class Router<Renderable> extends EventTarget {
                             method: (formData.get("webstd-ui:method") ??
                                 event.currentTarget.method) as HTMLFormMethod,
                         });
-                        if (signal?.aborted) return;
+                        if (options.signal?.aborted) return;
 
                         dispatch({ detail: null });
-                    }),
+                    }, options),
                 ]);
             }
         );

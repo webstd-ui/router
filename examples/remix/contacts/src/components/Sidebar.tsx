@@ -30,22 +30,21 @@ export function Sidebar(this: Remix.Handle) {
     };
 }
 
-function SidebarItem(this: Remix.Handle) {
+function SidebarItem(this: Remix.Handle, props: { contact: ContactRecord }) {
     const router = this.context.get(App);
 
-    return (props: { contact: ContactRecord }) => {
-        const link = routes.contact.show.href({
-            contactId: String(props.contact.id),
-        });
-        const className = router.isActive(link)
-            ? "active"
-            : router.isPending(link)
-              ? "pending"
-              : undefined;
+    return () => {
+        const href =
+            routes.contact.show.href({
+                contactId: String(props.contact.id),
+            }) + router.location.search;
 
         return (
             <li>
-                <a class={className} href={link + router.location.search}>
+                <a
+                    href={href}
+                    on={router.navLink({ activeClass: "active", pendingClass: "pending" })}
+                >
                     {props.contact.first || props.contact.last ? (
                         <>
                             {props.contact.first} {props.contact.last}

@@ -8,9 +8,8 @@ html {
 }
 
 body {
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-        "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+        "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -34,9 +33,7 @@ button {
     border: none;
     border-radius: 8px;
     padding: 0.5rem 0.75rem;
-    box-shadow:
-        0 0px 1px hsla(0, 0%, 0%, 0.2),
-        0 1px 2px hsla(0, 0%, 0%, 0.2);
+    box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.2), 0 1px 2px hsla(0, 0%, 0%, 0.2);
     background-color: white;
     line-height: 1.5;
     margin: 0;
@@ -49,9 +46,7 @@ button {
 textarea:hover,
 input:hover,
 button:hover {
-    box-shadow:
-        0 0px 1px hsla(0, 0%, 0%, 0.6),
-        0 1px 2px hsla(0, 0%, 0%, 0.2);
+    box-shadow: 0 0px 1px hsla(0, 0%, 0%, 0.6), 0 1px 2px hsla(0, 0%, 0%, 0.2);
 }
 
 button:active {
@@ -83,7 +78,7 @@ button:active {
     color: #eeb004;
 }
 
-form[data-destroy] button {
+form:has(input[name="webstd-ui:method"][value="delete"]) button {
     color: #f44250;
 }
 
@@ -397,4 +392,13 @@ i {
     align-items: center;
     justify-content: center;
     width: 100%;
+}
+
+#detail p.loading {
+    position: absolute;
+    top: 50%;
+    left: 60%;
+}
+p.loading {
+    margin: auto;
 }

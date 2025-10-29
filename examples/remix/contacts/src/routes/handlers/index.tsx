@@ -22,7 +22,7 @@ export const handlers = {
                     the preview at github.com/remix-run/remix
                 </a>
                 .
-            </p>,
+            </p>
         );
     },
     contact: {
