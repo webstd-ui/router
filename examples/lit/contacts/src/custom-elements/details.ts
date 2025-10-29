@@ -1,6 +1,6 @@
 import { events } from '@remix-run/events';
 import { Router } from '@webstd-ui/router';
-import { css, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { RouterController } from '~/controllers/router-controller.ts';
 import { codeStyles, formControlStyles, italicStyles } from '~/styles.ts';
 
@@ -16,12 +16,19 @@ export class Details extends LitElement {
                 flex: 1;
                 padding: 2rem 4rem;
                 width: 100%;
+                position: relative;
             }
 
             :host(.loading) {
                 opacity: 0.25;
                 transition: opacity 200ms;
                 transition-delay: 200ms;
+            }
+
+            p.loading {
+                position: absolute;
+                top: 50%;
+                left: 50%;
             }
 
             /* Contact view styles */
@@ -175,6 +182,10 @@ export class Details extends LitElement {
     }
 
     public render() {
+        if (!this.router.outlet) {
+            return html`<p class="loading">Loading...</p>`;
+        }
+
         return this.router.outlet;
     }
 }
