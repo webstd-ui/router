@@ -3,7 +3,6 @@ import { property } from 'lit/decorators.js';
 import { routes } from '~/routes/index.ts';
 import { restful } from '~/directives/restful-form.ts';
 import { on } from '~/directives/on.ts';
-import type { InteractionDescriptor } from '@remix-run/events';
 import { RouterController } from '~/controllers/router-controller.ts';
 
 export class Favorite extends LitElement {
@@ -76,7 +75,6 @@ export class Favorite extends LitElement {
                 action=${routes.contact.favorite.href({ contactId: this.contactId })}
                 ${restful({ method: 'put' })}
                 ${on([
-                    this.router.enhanceForm(),
                     this.router.optimistic(
                         event => {
                             this.optimisticFavorite = event.detail

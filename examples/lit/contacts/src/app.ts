@@ -123,11 +123,11 @@ export class App extends LitElement {
                     <h1>Lit Contacts</h1>
                     <div>
                         <app-search-bar></app-search-bar>
-                        <enhance-form>
+                        <enhanced-form>
                             <form action=${routes.contact.create.href()} method="post">
                                 <button type="submit">New</button>
                             </form>
-                        </enhance-form>
+                        </enhanced-form>
                     </div>
                     <nav>
                         <app-sidebar></app-sidebar>

@@ -148,33 +148,25 @@ export class SidebarItem extends LitElement {
         return this.routerController.router;
     }
 
-    private get link() {
-        return routes.contact.show.href({
-            contactId: String(this.contact.id),
-        });
-    }
-
-    private get routerClass() {
-        return this.router.isActive(this.link)
-            ? 'active'
-            : this.router.isPending(this.link)
-              ? 'pending'
-              : '';
+    private get href() {
+        return (
+            routes.contact.show.href({ contactId: String(this.contact.id) }) +
+            // Preserve search params when navigating
+            this.router.location.search
+        );
     }
 
     public render() {
         return html`
-            <a
-                class=${this.routerClass}
-                href=${this.link + this.router.location.search}
-                ${on(this.router.enhanceLink())}
-            >
-                ${when(
-                    this.contact.first || this.contact.last,
-                    () => `${this.contact.first} ${this.contact.last}`,
-                    () => html`<i>No Name</i>`,
-                )}${when(this.contact.favorite, () => html`<span>★</span>`)}</a
-            >
+            <enhanced-link .activeClass=${'active'} .pendingClass=${'pending'}>
+                <a href=${this.href}>
+                    ${when(
+                        this.contact.first || this.contact.last,
+                        () => `${this.contact.first} ${this.contact.last}`,
+                        () => html`<i>No Name</i>`,
+                    )}${when(this.contact.favorite, () => html`<span>★</span>`)}</a
+                >
+            </enhanced-link>
         `;
     }
 }

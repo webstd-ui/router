@@ -839,11 +839,13 @@ export class Router<Renderable> extends EventTarget {
 
     /**
      * Submit event handler for forms that routes submissions through the router.
-     * Use this with event listeners for forms inside Shadow DOM or when you need manual control.
+     * Use this with event listeners for forms when you need manual control.
+     *
+     * Can be used in combination with the `{ globallyEnhance: false }` Router constructor option.
      *
      * @example
      * ```tsx
-     * <form action={action} {...on(router.submitHandler)}>...</form>
+     * <form action={action} on={router.enhanceForm()}>...</form>
      * ```
      */
     enhanceForm(options: AddEventListenerOptions = {}): EventDescriptor<HTMLFormElement> {
@@ -883,11 +885,13 @@ export class Router<Renderable> extends EventTarget {
 
     /**
      * Click event handler for links that routes navigation through the router.
-     * Use this with event listeners for links inside Shadow DOM or when you need manual control.
+     * Use this with event listeners for links when you need manual control.
+     *
+     * Can be used in combination with the `{ globallyEnhance: false }` Router constructor option.
      *
      * @example
      * ```tsx
-     * <a href={href} {...on(router.linkHandler)}>...</a>
+     * <a href={href} on={router.enhanceLink()}>...</a>
      * ```
      */
     enhanceLink(options: AddEventListenerOptions = {}): EventDescriptor<HTMLAnchorElement> {

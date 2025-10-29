@@ -98,7 +98,7 @@ export class SearchBar extends LitElement {
 
     public render() {
         return html`
-            <form id="search-form" ${on(this.router.submitHandler)}>
+            <form id="search-form">
                 <input
                     aria-label="Search contacts"
                     class=${ifDefined(this.searching ? 'loading' : undefined)}
