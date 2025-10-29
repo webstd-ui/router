@@ -89,7 +89,7 @@ export class App extends LitElement {
         `,
     ];
 
-    public router: LitRouter = new Router();
+    public router: LitRouter = new Router({ globallyEnhance: false });
 
     public constructor() {
         super();
@@ -123,11 +123,11 @@ export class App extends LitElement {
                     <h1>Lit Contacts</h1>
                     <div>
                         <app-search-bar></app-search-bar>
-                        <router-form>
+                        <enhance-form>
                             <form action=${routes.contact.create.href()} method="post">
                                 <button type="submit">New</button>
                             </form>
-                        </router-form>
+                        </enhance-form>
                     </div>
                     <nav>
                         <app-sidebar></app-sidebar>

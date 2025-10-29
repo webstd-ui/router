@@ -68,7 +68,7 @@ export const show: InferRouteHandler<typeof routes.contact.show> = async ({
                 ${when(contact.notes, () => html`<p>{contact.notes}</p>`)}
 
                 <div>
-                    <router-form>
+                    <enhance-form>
                         <form
                             action=${routes.contact.edit.href({
                                 contactId: contact.id,
@@ -76,7 +76,7 @@ export const show: InferRouteHandler<typeof routes.contact.show> = async ({
                         >
                             <button type="submit">Edit</button>
                         </form>
-                    </router-form>
+                    </enhance-form>
                     <app-delete-button .contactId=${contact.id}></app-delete-button>
                 </div>
             </div>

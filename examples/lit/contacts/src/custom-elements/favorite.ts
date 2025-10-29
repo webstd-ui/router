@@ -43,7 +43,6 @@ export class Favorite extends LitElement {
 
     private optimisticFavorite: boolean | null = null;
     private currentContactId?: string;
-    private handleOptimistic!: InteractionDescriptor<HTMLFormElement>;
 
     private get favorite() {
         return this.optimisticFavorite !== null ? this.optimisticFavorite : this.initialFavorite;
@@ -51,18 +50,7 @@ export class Favorite extends LitElement {
 
     public override connectedCallback() {
         super.connectedCallback();
-
         this.currentContactId = this.contactId;
-        this.handleOptimistic = this.router.optimistic(
-            event => {
-                this.optimisticFavorite = event.detail
-                    ? event.detail?.get('favorite') === 'true'
-                    : null;
-
-                this.requestUpdate();
-            },
-            { signal: this.controller.signal },
-        );
     }
 
     private routerController = new RouterController(this);
@@ -87,7 +75,19 @@ export class Favorite extends LitElement {
             <form
                 action=${routes.contact.favorite.href({ contactId: this.contactId })}
                 ${restful({ method: 'put' })}
-                ${on([this.router.submitHandler, this.handleOptimistic])}
+                ${on([
+                    this.router.enhanceForm(),
+                    this.router.optimistic(
+                        event => {
+                            this.optimisticFavorite = event.detail
+                                ? event.detail?.get('favorite') === 'true'
+                                : null;
+
+                            this.requestUpdate();
+                        },
+                        { signal: this.controller.signal },
+                    ),
+                ])}
             >
                 <button
                     aria-label=${this.favorite ? 'Remove from favorites' : 'Add to favorites'}

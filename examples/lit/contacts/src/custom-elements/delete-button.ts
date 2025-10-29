@@ -38,7 +38,7 @@ export class DeleteButton extends LitElement {
             <form
                 action=${routes.contact.destroy.href({ contactId: this.contactId })}
                 ${restful({ method: 'delete' })}
-                ${on([this.confirm, this.router.submitHandler])}
+                ${on([this.confirm, this.router.enhanceForm()])}
             >
                 <button type="submit">Delete</button>
             </form>

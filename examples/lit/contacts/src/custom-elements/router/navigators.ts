@@ -8,25 +8,28 @@ abstract class RouterNavigator extends LitElement {
         return this.routerController.router;
     }
 
-    private dispose!: () => void;
-
     constructor(
         private element: 'a' | 'form',
-        private handler: 'navigationHandler' | 'submitHandler',
+        private handler: 'enhanceLink' | 'enhanceForm',
     ) {
         super();
     }
 
     public override connectedCallback() {
         super.connectedCallback();
+
         const element = this.querySelector(this.element)!;
-        const handler = this.router[this.handler] as EventDescriptor<HTMLElement>;
-        this.dispose = events(element, [handler]);
+        const handler = this.router[this.handler]({
+            signal: this.abortController.signal,
+        }) as EventDescriptor<HTMLElement>;
+
+        events(element, [handler]);
     }
 
+    private abortController = new AbortController();
     public override disconnectedCallback() {
         super.disconnectedCallback();
-        this.dispose();
+        this.abortController.abort();
     }
 
     public render() {
@@ -34,18 +37,18 @@ abstract class RouterNavigator extends LitElement {
     }
 }
 
-export class Form extends RouterNavigator {
-    static tag = 'router-form';
+export class Link extends RouterNavigator {
+    static tag = 'enhance-link';
 
     constructor() {
-        super('form', 'submitHandler');
+        super('a', 'enhanceLink');
     }
 }
 
-export class Link extends RouterNavigator {
-    static tag = 'router-link';
+export class Form extends RouterNavigator {
+    static tag = 'enhance-form';
 
     constructor() {
-        super('a', 'navigationHandler');
+        super('form', 'enhanceForm');
     }
 }

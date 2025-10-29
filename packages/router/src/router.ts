@@ -34,6 +34,12 @@ const [update, createUpdate] = createEventType("@webstd-ui/router:update");
 // Cache the origin since it can't change
 const origin = window.location.origin || `${window.location.protocol}//${window.location.host}`;
 
+export namespace Router {
+    export interface Options {
+        globallyEnhance?: boolean;
+    }
+}
+
 /**
  * Client-side router that mirrors the `@remix-run/fetch-router` API.
  *
@@ -103,7 +109,7 @@ export class Router<Renderable> extends EventTarget {
     /**
      * Creates a new client router, wiring up window history listeners and form/click interception.
      */
-    constructor() {
+    constructor({ globallyEnhance = true }: Router.Options = {}) {
         super();
 
         this.#location = window.location;
@@ -133,13 +139,15 @@ export class Router<Renderable> extends EventTarget {
             },
         };
 
-        // Handle routing events
-        events(document, [this.#handleClick, this.#handleSubmit]);
-        events(window, [
-            win.popstate(() => {
-                this.#gotoSelf();
-            }),
-        ]);
+        if (globallyEnhance) {
+            // Handle routing events
+            events(document, [this.#handleClick, this.#handleSubmit]);
+            events(window, [
+                win.popstate(() => {
+                    this.#gotoSelf();
+                }),
+            ]);
+        }
     }
 
     // Call whenever the internal state changes
@@ -838,7 +846,7 @@ export class Router<Renderable> extends EventTarget {
      * <form action={action} {...on(router.submitHandler)}>...</form>
      * ```
      */
-    get submitHandler(): EventDescriptor<HTMLFormElement> {
+    enhanceForm(options: AddEventListenerOptions = {}): EventDescriptor<HTMLFormElement> {
         return dom.submit(event => {
             // Don't handle if preventDefault was already called
             if (event.defaultPrevented) {
@@ -870,7 +878,7 @@ export class Router<Renderable> extends EventTarget {
             }
 
             this.submit(form, { method: method as FormMethod });
-        });
+        }, options);
     }
 
     /**
@@ -882,7 +890,7 @@ export class Router<Renderable> extends EventTarget {
      * <a href={href} {...on(router.linkHandler)}>...</a>
      * ```
      */
-    get navigationHandler(): EventDescriptor<HTMLAnchorElement> {
+    enhanceLink(options: AddEventListenerOptions = {}): EventDescriptor<HTMLAnchorElement> {
         return dom.click(event => {
             const isNonNavigationClick =
                 event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey;
@@ -917,7 +925,7 @@ export class Router<Renderable> extends EventTarget {
             if (href !== window.location.href) {
                 void this.navigate(targetPath, {});
             }
-        });
+        }, options);
     }
 
     /**

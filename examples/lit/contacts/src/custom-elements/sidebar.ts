@@ -167,7 +167,7 @@ export class SidebarItem extends LitElement {
             <a
                 class=${this.routerClass}
                 href=${this.link + this.router.location.search}
-                ${on(this.router.navigationHandler)}
+                ${on(this.router.enhanceLink())}
             >
                 ${when(
                     this.contact.first || this.contact.last,

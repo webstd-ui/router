@@ -17,7 +17,7 @@ export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
     const contact = (await getContact(params.contactId))!;
 
     return render(html`
-        <router-form>
+        <enhance-form>
             <form
                 action=${routes.contact.update.href({ contactId: params.contactId })}
                 ${restful({ method: 'put' })}
@@ -68,6 +68,6 @@ export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
                     <app-cancel-button></app-cancel-button>
                 </p>
             </form>
-        </router-form>
+        </enhance-form>
     `);
 };
