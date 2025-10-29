@@ -3,6 +3,7 @@ import {
     createInteraction,
     doc,
     dom,
+    type EventDescriptor,
     type EventHandler,
     events,
     win,
@@ -225,7 +226,7 @@ export class Router<Renderable> extends EventTarget {
             json?: JsonValue;
             text?: string;
         },
-        options?: { navigate?: boolean; signal?: AbortSignal; revalidationTimestamp?: number },
+        options?: { navigate?: boolean; signal?: AbortSignal; revalidationTimestamp?: number }
     ): Promise<void> {
         // Only abort in-flight GET navigations, not mutations
         // Mutations (POST/PUT/DELETE/PATCH) should complete even if user navigates away
@@ -312,7 +313,7 @@ export class Router<Renderable> extends EventTarget {
                 matchResult.params,
                 matchResult.handler,
                 url,
-                submission,
+                submission
             );
 
             // Check if this navigation was aborted during the handler call
@@ -400,7 +401,7 @@ export class Router<Renderable> extends EventTarget {
                                     window.location.search +
                                     window.location.hash,
                                 undefined,
-                                { revalidationTimestamp },
+                                { revalidationTimestamp }
                             );
                         } else {
                             await this.navigate(redirectError.redirect, {
@@ -415,7 +416,7 @@ export class Router<Renderable> extends EventTarget {
                         await this.#goto(
                             this.#location.pathname + this.#location.search + this.#location.hash,
                             undefined,
-                            { revalidationTimestamp },
+                            { revalidationTimestamp }
                         );
                     }
                 }
@@ -461,7 +462,7 @@ export class Router<Renderable> extends EventTarget {
 
     #matchRoute(
         url: URL,
-        method: string = "GET",
+        method: string = "GET"
     ): { params: Record<string, string>; handler: any } | null {
         const pathname = url.pathname;
 
@@ -503,7 +504,7 @@ export class Router<Renderable> extends EventTarget {
             formData?: FormData;
             json?: JsonValue;
             text?: string;
-        },
+        }
     ): Promise<Renderable | null> {
         const method = (submission?.formMethod || "GET") as FormMethod;
 
@@ -559,7 +560,7 @@ export class Router<Renderable> extends EventTarget {
 
             // Unknown response type
             throw new Error(
-                "Response returned from handler does not have _element property. Make sure to use render() function for HTML responses.",
+                "Response returned from handler does not have _element property. Make sure to use render() function for HTML responses."
             );
         }
 
@@ -774,7 +775,7 @@ export class Router<Renderable> extends EventTarget {
                 json,
                 text,
             },
-            { navigate: options.navigate, signal: options.signal },
+            { navigate: options.navigate, signal: options.signal }
         );
     }
 
@@ -829,6 +830,97 @@ export class Router<Renderable> extends EventTarget {
     }
 
     /**
+     * Submit event handler for forms that routes submissions through the router.
+     * Use this with event listeners for forms inside Shadow DOM or when you need manual control.
+     *
+     * @example
+     * ```tsx
+     * <form action={action} {...on(router.submitHandler)}>...</form>
+     * ```
+     */
+    get submitHandler(): EventDescriptor<HTMLFormElement> {
+        return dom.submit(event => {
+            // Don't handle if preventDefault was already called
+            if (event.defaultPrevented) {
+                return;
+            }
+
+            const form = event.target as HTMLFormElement;
+
+            // Check if form has target or external action
+            if (form.target && form.target !== "_self") {
+                return;
+            }
+
+            const action = form.action;
+            if (action && new URL(action).origin !== origin) {
+                return;
+            }
+
+            event.preventDefault();
+
+            // Check for method override in form data
+            // Include submitter to capture button values
+            const formData = new FormData(form, event.submitter);
+            let method = form.method.toUpperCase();
+            const methodOverride = formData.get("webstd-ui:method");
+            if (methodOverride && typeof methodOverride === "string") {
+                method = methodOverride.toUpperCase();
+                formData.delete("webstd-ui:method");
+            }
+
+            this.submit(form, { method: method as FormMethod });
+        });
+    }
+
+    /**
+     * Click event handler for links that routes navigation through the router.
+     * Use this with event listeners for links inside Shadow DOM or when you need manual control.
+     *
+     * @example
+     * ```tsx
+     * <a href={href} {...on(router.linkHandler)}>...</a>
+     * ```
+     */
+    get navigationHandler(): EventDescriptor<HTMLAnchorElement> {
+        return dom.click(event => {
+            const isNonNavigationClick =
+                event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey;
+            if (event.defaultPrevented || isNonNavigationClick) {
+                return;
+            }
+
+            const anchor = event.target as HTMLAnchorElement;
+            if (anchor.tagName !== "A") {
+                return;
+            }
+
+            if (
+                anchor.target !== "" ||
+                anchor.hasAttribute("download") ||
+                anchor.getAttribute("rel") === "external"
+            ) {
+                return;
+            }
+
+            const href = anchor.href;
+            if (href === "" || href.startsWith("mailto:")) {
+                return;
+            }
+
+            if (anchor.origin !== origin) {
+                return;
+            }
+
+            event.preventDefault();
+            const targetPath = anchor.pathname + anchor.search + anchor.hash;
+            if (href !== window.location.href) {
+                void this.navigate(targetPath, {});
+            }
+        });
+    }
+
+    /**
      * Wrap a form submission handler to emit optimistic updates while the mutation is pending.
      *
      * The returned handler dispatches `rmx:optimistic` events with the submitted {@link FormData}
@@ -840,7 +932,7 @@ export class Router<Renderable> extends EventTarget {
      */
     optimistic(
         handler: EventHandler<CustomEvent<FormData | null>, HTMLFormElement>,
-        { signal }: { signal?: AbortSignal },
+        { signal }: { signal?: AbortSignal }
     ) {
         const optimisticUpdates = createInteraction<HTMLFormElement, FormData | null>(
             "rmx:optimistic",
@@ -864,7 +956,7 @@ export class Router<Renderable> extends EventTarget {
                         dispatch({ detail: null });
                     }),
                 ]);
-            },
+            }
         );
 
         return optimisticUpdates(handler);

@@ -1,0 +1,42 @@
+[tools]
+node = "lts"
+pnpm = "latest"
+
+[env]
+_.path = ['{{config_root}}/node_modules/.bin']
+
+[tasks.install]
+description = "Install dependencies"
+sources = ["package.json"]
+run = "pnpm install"
+
+[tasks.dev]
+description = "Run the development server"
+depends = [":install"]
+run = ["vite dev --host"]
+
+[tasks.build]
+description = "Build the app"
+depends = [":install", "//packages/remix-client-router:build"]
+sources = [
+  "../../pnpm-lock.yaml",
+  "vite.config.ts",
+  "tsconfig.json",
+  "app/**/*.{ts,tsx,css}",
+]
+outputs = ["dist"]
+run = "vite build"
+
+[tasks.preview]
+description = "Preview the built application"
+depends = ":build"
+run = "vite preview"
+
+[tasks.fmt]
+description = "Format the entire project"
+run = "prettier --write ."
+
+[tasks.typecheck]
+description = "Typecheck the entire project"
+run = "tsgo --noEmit"
+

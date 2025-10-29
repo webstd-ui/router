@@ -1,0 +1,28 @@
+{
+    "name": "lit-contacts",
+    "private": true,
+    "type": "module",
+    "dependencies": {
+        "@lit/context": "^1.1.6",
+        "@lit/task": "^1.0.3",
+        "@remix-run/events": "catalog:remix",
+        "@remix-run/fetch-router": "catalog:remix",
+        "@std/assert": "catalog:std",
+        "@std/async": "catalog:std",
+        "@webstd-ui/router": "workspace:*",
+        "lit": "^3.3.1",
+        "match-sorter": "catalog:",
+        "sort-by": "catalog:"
+    },
+    "devDependencies": {
+        "@babel/plugin-proposal-decorators": "^7.28.0",
+        "@prettier/plugin-oxc": "^0.0.4",
+        "@rollup/plugin-babel": "^6.1.0",
+        "@typescript/native-preview": "catalog:tools",
+        "prettier": "catalog:tools",
+        "prettier-plugin-pkg": "^0.21.2",
+        "prettier-plugin-sh": "^0.18.0",
+        "prettier-plugin-toml": "^2.0.6",
+        "vite": "catalog:dev"
+    }
+}

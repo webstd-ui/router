@@ -29,6 +29,7 @@ catalogs:
     tools:
         "@biomejs/biome": ^2.3.0
         "@typescript/native-preview": latest
+        "prettier": ^3.6.2
 
 overrides:
     vite: npm:rolldown-vite@latest
