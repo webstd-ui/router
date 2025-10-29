@@ -11,24 +11,21 @@ export function RouterConsumer(Base: new () => LitElement) {
         private accessor _router: LitRouter | undefined;
 
         protected get router(): LitRouter {
-            assert(this._router, 'Component used outside of <app-main>');
+            assert(this._router, 'RouterConsumer subclass used outside of <app-main>');
             return this._router;
-        }
-
-        private onDisconnect!: () => void;
-
-        protected onRouterUpdate() {
-            this.requestUpdate();
         }
 
         public override connectedCallback() {
             super.connectedCallback();
-            this.onDisconnect = events(this.router, [Router.update(() => this.onRouterUpdate())]);
+            events(this.router, [
+                Router.update(() => this.requestUpdate(), { signal: this.abortController.signal }),
+            ]);
         }
 
+        protected abortController = new AbortController();
         public override disconnectedCallback() {
             super.disconnectedCallback();
-            this.onDisconnect();
+            this.abortController.abort();
         }
     };
 }

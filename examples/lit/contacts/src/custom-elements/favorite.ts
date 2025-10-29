@@ -1,12 +1,12 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { RouterConsumer } from '~/base-classes/router-consumer.ts';
 import { routes } from '~/routes/index.ts';
 import { restful } from '~/directives/restful-form.ts';
 import { on } from '~/directives/on.ts';
 import type { InteractionDescriptor } from '@remix-run/events';
+import { RouterController } from '~/controllers/router-controller.ts';
 
-export class Favorite extends RouterConsumer(LitElement) {
+export class Favorite extends LitElement {
     static tag = 'app-favorite';
 
     static styles = css`
@@ -63,6 +63,11 @@ export class Favorite extends RouterConsumer(LitElement) {
             },
             { signal: this.controller.signal },
         );
+    }
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
     }
 
     private controller = new AbortController();

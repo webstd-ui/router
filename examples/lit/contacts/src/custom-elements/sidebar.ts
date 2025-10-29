@@ -1,14 +1,14 @@
 import { css, html, LitElement } from 'lit';
 import { CONTACTS_KEY, type ContactRecord } from '~/lib/contacts.ts';
 import { routes } from '~/routes';
-import { RouterConsumer } from '../base-classes/router-consumer.ts';
 import { when } from 'lit/directives/when.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { property } from 'lit/decorators.js';
 import { italicStyles } from '~/styles.ts';
 import { on } from '~/directives/on.ts';
+import { RouterController } from '~/controllers/router-controller.ts';
 
-export class Sidebar extends RouterConsumer(LitElement) {
+export class Sidebar extends LitElement {
     static tag = 'app-sidebar';
 
     static styles = [
@@ -33,6 +33,11 @@ export class Sidebar extends RouterConsumer(LitElement) {
             }
         `,
     ];
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
     get contacts() {
         return this.router.storage.get(CONTACTS_KEY) || [];
@@ -63,7 +68,7 @@ export class Sidebar extends RouterConsumer(LitElement) {
     }
 }
 
-export class SidebarItem extends RouterConsumer(LitElement) {
+export class SidebarItem extends LitElement {
     static tag = 'sidebar-item';
 
     static styles = [
@@ -137,6 +142,11 @@ export class SidebarItem extends RouterConsumer(LitElement) {
 
     @property({ attribute: false })
     accessor contact!: ContactRecord;
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
     private get link() {
         return routes.contact.show.href({

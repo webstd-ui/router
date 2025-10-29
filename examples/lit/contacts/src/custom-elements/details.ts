@@ -1,8 +1,10 @@
+import { events } from '@remix-run/events';
+import { Router } from '@webstd-ui/router';
 import { css, LitElement } from 'lit';
-import { RouterConsumer } from '~/base-classes/router-consumer.ts';
+import { RouterController } from '~/controllers/router-controller.ts';
 import { codeStyles, formControlStyles, italicStyles } from '~/styles.ts';
 
-export class Details extends RouterConsumer(LitElement) {
+export class Details extends LitElement {
     static tag = 'app-details';
 
     static styles = [
@@ -16,7 +18,7 @@ export class Details extends RouterConsumer(LitElement) {
                 width: 100%;
             }
 
-            :host.loading {
+            :host(.loading) {
                 opacity: 0.25;
                 transition: opacity 200ms;
                 transition-delay: 200ms;
@@ -146,14 +148,30 @@ export class Details extends RouterConsumer(LitElement) {
         `,
     ];
 
-    protected override onRouterUpdate() {
-        if (this.router.navigating.to.state === 'loading') {
-            this.classList.add('loading');
-        } else {
-            this.classList.remove('loading');
-        }
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
-        super.onRouterUpdate();
+    public override connectedCallback() {
+        super.connectedCallback();
+        events(this.router, [
+            Router.update(
+                () => {
+                    if (this.router.navigating.to.state === 'loading') {
+                        this.classList.add('loading');
+                    } else {
+                        this.removeAttribute('class');
+                    }
+                },
+                { signal: this.abortController.signal },
+            ),
+        ]);
+    }
+
+    private abortController = new AbortController();
+    public override disconnectedCallback() {
+        this.abortController.abort();
     }
 
     public render() {

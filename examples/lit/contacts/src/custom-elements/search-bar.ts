@@ -1,11 +1,11 @@
 import { css, html, LitElement } from 'lit';
-import { RouterConsumer } from '../base-classes/router-consumer.ts';
 import { formControlStyles, srOnlyStyles } from '~/styles.ts';
 import { ifDefined } from 'lit/directives/if-defined.js';
 import { on } from '~/directives/on.ts';
 import { dom } from '@remix-run/events';
+import { RouterController } from '~/controllers/router-controller.ts';
 
-export class SearchBar extends RouterConsumer(LitElement) {
+export class SearchBar extends LitElement {
     static tag = 'app-search-bar';
 
     static styles = [
@@ -51,6 +51,11 @@ export class SearchBar extends RouterConsumer(LitElement) {
             }
         `,
     ];
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
     private get query() {
         return this.router.url.searchParams.get('q')

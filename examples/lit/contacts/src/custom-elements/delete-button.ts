@@ -3,11 +3,11 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { on } from '~/directives/on.ts';
 import { restful } from '~/directives/restful-form.ts';
-import { RouterConsumer } from '~/base-classes/router-consumer.ts';
 import { routes } from '~/routes/index.ts';
 import { formControlStyles } from '~/styles.ts';
+import { RouterController } from '~/controllers/router-controller.ts';
 
-export class DeleteButton extends RouterConsumer(LitElement) {
+export class DeleteButton extends LitElement {
     static tag = 'app-delete-button';
 
     static styles = [
@@ -18,6 +18,11 @@ export class DeleteButton extends RouterConsumer(LitElement) {
             }
         `,
     ];
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
     @property({ attribute: false })
     public accessor contactId!: string;

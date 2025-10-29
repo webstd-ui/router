@@ -1,9 +1,14 @@
 import { events } from '@remix-run/events';
 import { html, LitElement } from 'lit';
-import { RouterConsumer } from '~/base-classes/router-consumer.ts';
+import { RouterController } from '~/controllers/router-controller.ts';
 
-export class Form extends RouterConsumer(LitElement) {
+export class Form extends LitElement {
     static tag = 'router-form';
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
     private dispose!: () => void;
 
@@ -23,10 +28,15 @@ export class Form extends RouterConsumer(LitElement) {
     }
 }
 
-export class Link extends RouterConsumer(LitElement) {
+export class Link extends LitElement {
     static tag = 'router-link';
 
     private dispose!: () => void;
+
+    private routerController = new RouterController(this);
+    private get router() {
+        return this.routerController.router;
+    }
 
     public override connectedCallback() {
         super.connectedCallback();
