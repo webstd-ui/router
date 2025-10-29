@@ -1,70 +1,57 @@
 # Blog Example
 
-A simple blog application demonstrating the capabilities of [@webstd-ui/router](../../packages/router) with a content-focused use case. This example shows how to build a blog with post creation, listing, and viewing functionality.
+A content-focused workflow for `@webstd-ui/router`. It uses `resources()` from `@remix-run/fetch-router` to model blog post CRUD while rendering through `@remix-run/dom`.
 
-## Features
+## Highlights
 
-- **Post Management**: Create and view blog posts
-- **Resource Routes**: Uses `resources()` helper for RESTful route structure
-- **Post Listing**: Browse all blog posts
-- **Individual Post Views**: View individual blog posts by ID
-- **Form Handling**: Create new posts via form submission
-- **AppStorage**: Demonstrates per-request storage for data persistence
-- **Type-Safe Routing**: Full TypeScript support with route type inference
-- **Interactive Components**: Includes a counter component for client-side interactivity
+-   **Resource routing** – handlers generated from `resources()` cover index/new/show/create flows
+-   **AppStorage** – in-memory persistence for posts that mirrors `@remix-run/fetch-router` storage
+-   **Interactive UI** – combines router-driven state with stateful components (e.g. counter)
+-   **Type-safe handlers** – handlers co-located in `src/handlers.tsx` with full TypeScript inference
 
-## Technology Stack
+## Tech Stack
 
-- **Router**: [@webstd-ui/router](../../packages/router)
-- **UI Framework**: [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
-- **Build Tool**: Vite
-- **Language**: TypeScript
+-   **Router:** [`@webstd-ui/router`](../../../packages/router)
+-   **Renderer:** [`@remix-run/dom`](https://www.npmjs.com/package/@remix-run/dom)
+-   **Build:** Vite
+-   **Language:** TypeScript/TSX
 
 ## Getting Started
 
-### Prerequisites
+Inside `examples/remix/blog`:
 
-- [Mise](https://mise.jdx.dev/) for task automation
+```sh
+mise run :install   # pnpm install
+mise run :dev       # start Vite on http://localhost:1612
+```
 
-### Installation & Running
+Run `mise install` at the repository root once if you have not already provisioned the toolchain.
 
-1. Install dependencies:
-   ```sh
-   mise install
-   ```
-
-2. Start the development server:
-   ```sh
-   mise run :dev
-   ```
-
-3. Open your browser to the URL shown in the terminal (typically `http://localhost:5173`)
-
-## Project Structure
+## Project Layout
 
 ```
 src/
-├── components/     # Reusable UI components (e.g., Counter)
-├── lib/           # Utilities and data management (posts.ts)
-├── handlers.tsx   # Route handlers for all pages
-├── routes.ts      # Route definitions using resources()
-├── App.tsx        # Main application component
-└── main.tsx       # Application entry point
+├── App.tsx             # Router wiring + layout
+├── components/         # Client-side components (counter, etc.)
+├── handlers.tsx        # Route loaders/actions
+├── lib/posts.ts        # AppStorage-backed data store
+├── main.tsx            # Bootstraps the router
+└── routes.ts           # Route map created via resources()
 ```
 
-## Routes
+## Route Matrix
 
-| Path | Method | Handler | Description |
-|------|--------|---------|-------------|
-| `/` | GET | `index` | Home page with counter |
-| `/about` | GET | `about` | About page |
-| `/blog` | GET | `blog.index` | List all blog posts |
-| `/blog/new` | GET | `blog.new` | New post form |
-| `/blog` | POST | `blog.create` | Create new post |
-| `/blog/:id` | GET | `blog.show` | View individual post |
+| Path        | Method | Handler       | Purpose                |
+| ----------- | ------ | ------------- | ---------------------- |
+| `/`         | GET    | `index`       | Home page with counter |
+| `/about`    | GET    | `about`       | Static about page      |
+| `/blog`     | GET    | `blog.index`  | List posts             |
+| `/blog/new` | GET    | `blog.new`    | Post creation form     |
+| `/blog`     | POST   | `blog.create` | Persist new post       |
+| `/blog/:id` | GET    | `blog.show`   | Single post view       |
 
 ## Learn More
 
-- [Router Documentation](../../packages/router)
-- [@remix-run/fetch-router Resources](https://www.npmjs.com/package/@remix-run/fetch-router) - Learn about resource routes
-- [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
+-   [Router Documentation](../../../packages/router)
+-   [`@remix-run/fetch-router`](https://www.npmjs.com/package/@remix-run/fetch-router)
+-   [Remix 3: Remixing UI](https://remix.run/blog/remix-jam-2025-recap#remixing-ui)

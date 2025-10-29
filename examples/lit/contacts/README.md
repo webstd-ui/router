@@ -1,58 +1,49 @@
-# Contacts Example
+# Contacts Example (Lit)
 
-A contact management application demonstrating the capabilities of [@webstd-ui/router](../../packages/router). This example is based on the [React Router address book tutorial](https://reactrouter.com/tutorials/address-book), adapted to use our framework-agnostic client-side router.
+Contacts demo rendered with [Lit](https://lit.dev/) custom elements, using [@webstd-ui/router](../../../packages/router) for navigation. It demonstrates how the router's outlet can drive renderers beyond Remix.
 
-## Features
+## Highlights
 
-- **Contact Management**: Create, read, update, and delete contacts
-- **Search Functionality**: Real-time contact search with URL integration
-- **Favorite Contacts**: Mark contacts as favorites
-- **Form Handling**: Demonstrates POST/PUT/DELETE form submissions
-- **Navigation States**: Loading indicators and optimistic UI
-- **URL-Driven State**: All state reflected in the URL
-- **File-Based Routing**: Organized route structure in `src/routes/`
+- **Custom elements** – routes return `render()` responses that mount Lit components
+- **Controller pattern** – field validation and state live in `src/controllers`
+- **Scoped styles** – shared styles exported from `src/styles.ts`
+- **URL-synchronized search** – filters contacts via query parameters
 
-## Technology Stack
+## Tech Stack
 
-- **Router**: [@webstd-ui/router](../../packages/router)
-- **UI Framework**: [lit](https://www.npmjs.com/package/lit)
-- **Build Tool**: Vite
-- **Language**: TypeScript
+- **Router:** [`@webstd-ui/router`](../../../packages/router)
+- **Renderer:** [`lit`](https://www.npmjs.com/package/lit)
+- **Build:** Vite
+- **Language:** TypeScript
 
 ## Getting Started
 
-### Prerequisites
+Inside `examples/lit/contacts`:
 
-- [Mise](https://mise.jdx.dev/) for task automation
+```sh
+mise run :install
+mise run :dev
+```
 
-### Installation & Running
+Vite logs the local dev URL (defaults to `http://localhost:1612`). Run `mise install` at the repo root first if the toolchain has not been provisioned yet.
 
-1. Install dependencies:
-   ```sh
-   mise install
-   ```
-
-2. Start the development server:
-   ```sh
-   mise run :dev
-   ```
-
-3. Open your browser to the URL shown in the terminal (typically `http://localhost:5173`)
-
-## Project Structure
+## Project Layout
 
 ```
 src/
-├── components/     # Reusable UI components
-├── lib/           # Utilities and data storage
-├── routes/        # Route handlers for different pages
-├── app.tsx        # Main application component
-├── main.tsx       # Application entry point
-└── index.css      # Global styles
+├── app.ts             # Router wiring + top-level custom element
+├── controllers/       # Lit controllers for form + navigation state
+├── custom-elements/   # Web components used across routes
+├── directives/        # Lit directives for templating helpers
+├── lib/               # In-memory data utilities
+├── mixins/            # Shared mixins for components
+├── routes/            # Route handlers and definitions
+├── styles.ts          # Shared CSS-in-JS
+└── main.ts            # Entry point bootstrapping the router
 ```
 
 ## Learn More
 
-- [Router Documentation](../../packages/router)
+- [Router Documentation](../../../packages/router)
 - [React Router Tutorial](https://reactrouter.com/tutorials/address-book) (original inspiration)
-- [lit](https://www.npmjs.com/package/lit)
+- [Lit Documentation](https://lit.dev/docs/)

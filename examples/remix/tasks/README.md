@@ -1,86 +1,58 @@
 # Tasks Example
 
-A task management application demonstrating the capabilities of [@webstd-ui/router](../../packages/router) with async operations, redirects, and optimistic UI patterns. This example shows how to build a task manager with create, view, and delete functionality.
+An async-heavy Remix 3 demo that exercises [@webstd-ui/router](../../../packages/router) features such as redirects, optimistic updates, and loading indicators while managing a list of tasks.
 
-## Features
+## Highlights
 
-- **Task Management**: Create, view, and delete tasks
-- **Resource Routes**: Uses `resources()` helper for RESTful routing with custom destroy route
-- **Async Operations**: Demonstrates loading states with simulated delays
-- **Redirects**: Server-style redirects after mutations
-- **Form Handling**: Create and delete tasks via form submissions
-- **Navigation States**: Loading indicators during async operations
-- **Type-Safe Routing**: Full TypeScript support with route type inference
-- **Component-Based UI**: Reusable task components
+-   **Async loaders/actions** – artificial delays keep navigation state visible for debugging
+-   **Redirect patterns** – handlers return `redirect()` to guide follow-up navigation
+-   **Optimistic UI** – optimistic task creation/removal wired through `router.optimistic`
+-   **Resource routing** – `resources()` definition in `src/routes.ts` mirrors REST semantics
 
-## Technology Stack
+## Tech Stack
 
-- **Router**: [@webstd-ui/router](../../packages/router)
-- **UI Framework**: [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
-- **Build Tool**: Vite
-- **Language**: TypeScript
-- **Async Utilities**: [@std/async](https://jsr.io/@std/async) for delays
+-   **Router:** [`@webstd-ui/router`](../../../packages/router)
+-   **Renderer:** [`@remix-run/dom`](https://www.npmjs.com/package/@remix-run/dom)
+-   **Build:** Vite
+-   **Language:** TypeScript/TSX
 
 ## Getting Started
 
-### Prerequisites
+From `examples/remix/tasks`:
 
-- [Mise](https://mise.jdx.dev/) for task automation
+```sh
+mise run :install
+mise run :dev
+```
 
-### Installation & Running
+Open the dev server at the URL emitted by Vite (defaults to `http://localhost:1612`). Run `mise install` at the repo root beforehand to provision the toolchain if needed.
 
-1. Install dependencies:
-   ```sh
-   mise install
-   ```
-
-2. Start the development server:
-   ```sh
-   mise run :dev
-   ```
-
-3. Open your browser to the URL shown in the terminal (typically `http://localhost:5173`)
-
-## Project Structure
+## Project Layout
 
 ```
 src/
-├── components/     # Reusable UI components
-│   ├── NewTask.tsx    # New task creation form
-│   └── TaskItem.tsx   # Individual task component
-├── lib/           # Utilities and data management
-│   └── task-data.ts   # Task data storage
-├── handlers.tsx   # Route handlers for all pages
-├── routes.ts      # Route definitions
-├── app.tsx        # Main application component
-└── main.tsx       # Application entry point
+├── app.tsx             # Layout + router wiring
+├── components/
+│   ├── NewTask.tsx     # Task creation form
+│   └── TaskItem.tsx    # Individual task row
+├── handlers.tsx        # Route loaders/actions with async delays
+├── lib/task-data.ts    # In-memory task store
+├── main.tsx            # Entry point
+└── routes.ts           # Route definition via resources()
 ```
 
-## Routes
+## Route Matrix
 
-| Path | Method | Handler | Description |
-|------|--------|---------|-------------|
-| `/` | GET | `index` | Redirects to first task |
-| `/task/new` | GET | `tasks.new` | New task form |
-| `/task` | POST | `tasks.create` | Create new task |
-| `/task/:id` | GET | `tasks.show` | View task details |
-| `/task/destroy/:id` | POST | `tasks.destroy` | Delete task |
-
-## Testing Loading States
-
-This example includes artificial delays (800ms) in async handlers to make loading states visible during development. This helps test:
-
-- Loading indicators during navigation
-- Pending states in the UI
-- Navigation state transitions
-- User experience during async operations
+| Path                | Method | Handler         | Purpose                |
+| ------------------- | ------ | --------------- | ---------------------- |
+| `/`                 | GET    | `index`         | Redirect to first task |
+| `/task/new`         | GET    | `tasks.new`     | Render creation form   |
+| `/task`             | POST   | `tasks.create`  | Create a task          |
+| `/task/:id`         | GET    | `tasks.show`    | Show task details      |
+| `/task/destroy/:id` | POST   | `tasks.destroy` | Delete a task          |
 
 ## Learn More
 
-- [Router Documentation](../../packages/router)
-- [@remix-run/fetch-router Resources](https://www.npmjs.com/package/@remix-run/fetch-router) - Learn about resource routes
-- [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
-
-## License
-
-See the root repository for license information.
+-   [Router Documentation](../../../packages/router)
+-   [`@remix-run/fetch-router`](https://www.npmjs.com/package/@remix-run/fetch-router)
+-   [Remix 3: Remixing UI](https://remix.run/blog/remix-jam-2025-recap#remixing-ui)

@@ -1,58 +1,47 @@
 # Contacts Example
 
-A contact management application demonstrating the capabilities of [@webstd-ui/router](../../packages/router). This example is based on the [React Router address book tutorial](https://reactrouter.com/tutorials/address-book), adapted to use our framework-agnostic client-side router.
+A Remix 3 contacts manager showcasing [@webstd-ui/router](../../../packages/router) features. It adapts the [React Router address book tutorial](https://reactrouter.com/tutorials/address-book) to run entirely on the client while reusing the same patterns.
 
-## Features
+## Highlights
 
-- **Contact Management**: Create, read, update, and delete contacts
-- **Search Functionality**: Real-time contact search with URL integration
-- **Favorite Contacts**: Mark contacts as favorites
-- **Form Handling**: Demonstrates POST/PUT/DELETE form submissions
-- **Navigation States**: Loading indicators and optimistic UI
-- **URL-Driven State**: All state reflected in the URL
-- **File-Based Routing**: Organized route structure in `src/routes/`
+-   **CRUD routing** – handlers for listing, creating, updating, and deleting contacts
+-   **Enhanced forms** – demonstrates POST/PUT/DELETE intercepts with optimistic navigation state
+-   **URL-driven search** – filters contacts through query parameters
+-   **Config-driven routing** – handlers in `src/routes`
+-   **Navigation feedback** – loading indicators driven by `router.navigating`
 
-## Technology Stack
+## Tech Stack
 
-- **Router**: [@webstd-ui/router](../../packages/router)
-- **UI Framework**: [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
-- **Build Tool**: Vite
-- **Language**: TypeScript
+-   **Router:** [`@webstd-ui/router`](../../../packages/router)
+-   **Renderer:** [`@remix-run/dom`](https://www.npmjs.com/package/@remix-run/dom)
+-   **Build:** Vite
+-   **Language:** TypeScript/TSX
 
 ## Getting Started
 
-### Prerequisites
+Run the commands inside `examples/remix/contacts`:
 
-- [Mise](https://mise.jdx.dev/) for task automation
+```sh
+mise run :install   # pnpm install
+mise run :dev       # start Vite on http://localhost:1612
+```
 
-### Installation & Running
+If you have not already installed tools globally for the repo, run `mise install` once at the repository root.
 
-1. Install dependencies:
-   ```sh
-   mise install
-   ```
-
-2. Start the development server:
-   ```sh
-   mise run :dev
-   ```
-
-3. Open your browser to the URL shown in the terminal (typically `http://localhost:5173`)
-
-## Project Structure
+## Project Layout
 
 ```
 src/
-├── components/     # Reusable UI components
-├── lib/           # Utilities and data storage
-├── routes/        # Route handlers for different pages
-├── app.tsx        # Main application component
-├── main.tsx       # Application entry point
-└── index.css      # Global styles
+├── app.tsx              # Router wiring + layout shell
+├── components/          # UI widgets (forms, list, nav)
+├── lib/                 # In-memory data + helpers
+├── main.tsx             # App bootstrap
+├── routes/              # Route handlers (loaders/actions)
+└── index.css            # Global styles
 ```
 
 ## Learn More
 
-- [Router Documentation](../../packages/router)
-- [React Router Tutorial](https://reactrouter.com/tutorials/address-book) (original inspiration)
-- [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
+-   [Router Documentation](../../../packages/router)
+-   [React Router Tutorial](https://reactrouter.com/tutorials/address-book) (original inspiration)
+-   [Remix 3: Remixing UI](https://remix.run/blog/remix-jam-2025-recap#remixing-ui)

@@ -1,58 +1,46 @@
-# Contacts Example
+# Contacts Example (Crank)
 
-A contact management application demonstrating the capabilities of [@webstd-ui/router](../../packages/router). This example is based on the [React Router address book tutorial](https://reactrouter.com/tutorials/address-book), adapted to use our framework-agnostic client-side router.
+Contacts demo rendered with [Crank](https://crank.js.org/), using [@webstd-ui/router](../../../packages/router) for navigation. It demonstrates how the router's outlet can drive renderers beyond Remix.
 
-## Features
+## Highlights
 
-- **Contact Management**: Create, read, update, and delete contacts
-- **Search Functionality**: Real-time contact search with URL integration
-- **Favorite Contacts**: Mark contacts as favorites
-- **Form Handling**: Demonstrates POST/PUT/DELETE form submissions
-- **Navigation States**: Loading indicators and optimistic UI
-- **URL-Driven State**: All state reflected in the URL
-- **File-Based Routing**: Organized route structure in `src/routes/`
+-   **Crank renderer** – hooks the router outlet into Crank's custom renderer
+-   **Full CRUD** – loaders/actions cover create, read, update, delete flows
+-   **Query-powered search** – synchronizes contact filtering with the URL
+-   **Optimistic state** – leverages navigation state to show pending UI
 
-## Technology Stack
+## Tech Stack
 
-- **Router**: [@webstd-ui/router](../../packages/router)
-- **UI Framework**: [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
-- **Build Tool**: Vite
-- **Language**: TypeScript
+-   **Router:** [`@webstd-ui/router`](../../../packages/router)
+-   **Renderer:** [`@b9g/crank`](https://www.npmjs.com/package/@b9g/crank)
+-   **Build:** Vite
+-   **Language:** TypeScript/TSX
 
 ## Getting Started
 
-### Prerequisites
+From `examples/crank/contacts`:
 
-- [Mise](https://mise.jdx.dev/) for task automation
+```sh
+mise run :install
+mise run :dev
+```
 
-### Installation & Running
+Vite reports the local dev URL (defaults to `http://localhost:1612`). Run `mise install` once at the repo root if the toolchain has not been bootstrapped yet.
 
-1. Install dependencies:
-   ```sh
-   mise install
-   ```
-
-2. Start the development server:
-   ```sh
-   mise run :dev
-   ```
-
-3. Open your browser to the URL shown in the terminal (typically `http://localhost:5173`)
-
-## Project Structure
+## Project Layout
 
 ```
 src/
-├── components/     # Reusable UI components
-├── lib/           # Utilities and data storage
-├── routes/        # Route handlers for different pages
-├── app.tsx        # Main application component
-├── main.tsx       # Application entry point
-└── index.css      # Global styles
+├── app.tsx              # Crank renderer + router wiring
+├── components/          # UI widgets (forms, list items)
+├── lib/                 # In-memory contact store
+├── main.tsx             # Entry point linking router to DOM
+├── routes/              # Route loaders/actions
+└── index.css            # Global styles
 ```
 
 ## Learn More
 
-- [Router Documentation](../../packages/router)
-- [React Router Tutorial](https://reactrouter.com/tutorials/address-book) (original inspiration)
-- [@remix-run/dom](https://www.npmjs.com/package/@remix-run/dom)
+-   [Router Documentation](../../../packages/router)
+-   [React Router Tutorial](https://reactrouter.com/tutorials/address-book) (original inspiration)
+-   [Crank](https://crank.js.org/)
