@@ -19,11 +19,133 @@ import {
 import type { RoutePattern } from "@remix-run/route-pattern";
 import type { NavigateOptions, Navigation, SubmitOptions, SubmitTarget, To } from "./types.ts";
 
-// declare global {
-//     interface Response {
-//         _element?: any;
-//     }
-// }
+// ============================================================================
+// Router Handler Types
+// ============================================================================
+
+type AnyRouteDef = Route<any, any> | string;
+
+type ExtractHandler<T> = T extends (...args: any) => any
+    ? T
+    : T extends { handler: infer H }
+    ? ExtractHandler<H>
+    : never;
+
+type HandlerContext<T extends AnyRouteDef> = Parameters<ExtractHandler<InferRouteHandler<T>>>[0];
+
+type AwaitedLoaderData<L> = L extends (...args: any) => infer R ? Awaited<R> : never;
+
+/**
+ * Context passed to a route component function.
+ */
+export interface RouterComponentContext<
+    T extends AnyRouteDef = AnyRouteDef,
+    Renderable = any,
+    LoaderData = unknown,
+> {
+    outlet: Renderable | null;
+    children: Renderable | null;
+    data: LoaderData;
+    params: HandlerContext<T>["params"];
+    request: HandlerContext<T>["request"];
+    url: HandlerContext<T>["url"];
+    storage: HandlerContext<T>["storage"];
+    loaderData: LoaderData;
+}
+
+/**
+ * Component function used to render a route. Receives the composed outlet and request context.
+ */
+export type RouterComponent<
+    T extends AnyRouteDef = AnyRouteDef,
+    Renderable = any,
+    LoaderData = unknown,
+> = (context: RouterComponentContext<T, Renderable, LoaderData>) => Renderable;
+
+/**
+ * Loader function used to fetch data for a route component.
+ */
+export type RouterLoader<T extends AnyRouteDef = AnyRouteDef, LoaderData = unknown> = (
+    context: HandlerContext<T>
+) => LoaderData | Promise<LoaderData>;
+
+export type RouterLeafHandlerWithLoader<
+    TRoute extends Route<any, any>,
+    Renderable,
+    Loader extends RouterLoader<TRoute, any> = RouterLoader<TRoute, any>,
+    Data = AwaitedLoaderData<Loader>,
+> = {
+    loader: Loader;
+    component?: RouterComponent<TRoute, Renderable, Data>;
+};
+
+export type RouterLeafHandlerWithoutLoader<TRoute extends Route<any, any>, Renderable> = {
+    loader?: undefined;
+    component?: RouterComponent<TRoute, Renderable, undefined>;
+};
+
+export type RouterLeafHandler<TRoute extends Route<any, any>, Renderable> =
+    | InferRouteHandler<TRoute>
+    | RouterLeafHandlerWithLoader<TRoute, Renderable>
+    | RouterLeafHandlerWithoutLoader<TRoute, Renderable>;
+
+export type RouterBranchHandlerWithLoader<
+    TRoute extends AnyRouteDef,
+    TChildren extends RouteMap,
+    Renderable,
+    Loader extends RouterLoader<TRoute, any> = RouterLoader<TRoute, any>,
+    Data = AwaitedLoaderData<Loader>,
+> = {
+    loader: Loader;
+    component?: RouterComponent<TRoute, Renderable, Data>;
+    children?: RouterHandlers<TChildren, Renderable>;
+};
+
+export type RouterBranchHandlerWithoutLoader<
+    TRoute extends AnyRouteDef,
+    TChildren extends RouteMap,
+    Renderable,
+> = {
+    loader?: undefined;
+    component?: RouterComponent<TRoute, Renderable, undefined>;
+    children?: RouterHandlers<TChildren, Renderable>;
+};
+
+export type RouterBranchHandler<TRoute extends AnyRouteDef, TChildren extends RouteMap, Renderable> =
+    | RouterBranchHandlerWithLoader<TRoute, TChildren, Renderable>
+    | RouterBranchHandlerWithoutLoader<TRoute, TChildren, Renderable>;
+
+type RouterHandlersTree<T extends RouteMap, Renderable> = {
+    [K in keyof T]?: T[K] extends Route<any, any>
+        ? RouterLeafHandler<T[K], Renderable>
+        : T[K] extends RouteMap
+        ? RouterHandlers<T[K], Renderable> | RouterBranchHandler<string, T[K], Renderable>
+        : never;
+};
+
+/**
+ * Handler map that supports nested { loader, children } structure and a root route.
+ */
+export type RouterHandlers<T extends RouteMap, Renderable = any> = {
+    root?: RouterBranchHandler<string, T, Renderable>;
+} & RouterHandlersTree<T, Renderable>;
+
+/**
+ * Helper type to infer the correct handler shape from a route map.
+ * Use this when defining handlers to get type safety.
+ */
+export type InferRouterHandlers<T extends RouteMap, Renderable = any> = RouterHandlers<T, Renderable>;
+
+export type RouterHandler<T extends RouteMap, Renderable = any> = RouterHandlers<T, Renderable>;
+
+interface RouteComponentPayload<Renderable = any, LoaderData = unknown> {
+    component: RouterComponent<any, Renderable, LoaderData>;
+    data: LoaderData;
+    params: Record<string, any>;
+    request: Request;
+    url: URL;
+    storage: AppStorage;
+}
 
 // Cache the origin since it can't change
 const origin = window.location.origin || `${window.location.protocol}//${window.location.host}`;
@@ -37,6 +159,10 @@ export namespace Router {
         location: Router.Location;
         url: URL;
         navigating: Router.Navigating;
+        /**
+         * The fully composed outlet, with all nested routes rendered together.
+         * Parent loaders wrap their children by receiving an `outlet` parameter.
+         */
         outlet: Renderable | null;
     }
 
@@ -511,27 +637,136 @@ export class Router<Renderable = any> extends EventTarget {
     //     throw new Error("route() not yet implemented - use map() instead");
     // }
 
+    /**
+     * Map routes to handlers. Supports both flat and nested structures.
+     *
+     * @example
+     * ```typescript
+     * // Flat structure (legacy)
+     * router.map(routes, {
+     *   home: () => render(<Home />),
+     *   'posts.index': () => render(<Posts />)
+     * });
+     *
+     * // Nested structure with root
+     * router.map(routes, {
+     *   root: {
+     *     loader: () => render(<Layout />),
+     *     children: {
+     *       home: () => render(<Home />),
+     *       posts: {
+     *         loader: () => render(<Posts />),
+     *         children: { ... }
+     *       }
+     *     }
+     *   }
+     * });
+     * ```
+     */
     map<M extends RequestMethod | "ANY", P extends string>(
         route: P | RoutePattern<P> | Route<M, P>,
         handler: InferRouteHandler<P>
     ): void;
-    map<T extends RouteMap>(routes: T, handlers: RouteHandlers<T>): void;
-    map(routeOrRoutes: any, handler: any): void {
+    map<T extends RouteMap>(routes: T, handlers: RouteHandlers<T> | RouterHandlers<T, Renderable>): void;
+    map(routeOrRoutes: any, handlers: any): void {
         const wasEmpty = this.#routeMap === null;
 
-        // Store the route map for later conversion
+        // Store both the route map and handlers for later conversion
         if (wasEmpty) {
             this.#routeMap = routeOrRoutes;
+            this.#handlers = handlers;
         }
 
+        // Flatten handlers for fetch-router registration
+        const flatHandlers = this.#flattenHandlers(handlers);
+
         // Register routes with fetch-router
-        this.#fetchRouter.map(routeOrRoutes, handler);
+        this.#fetchRouter.map(routeOrRoutes, flatHandlers);
 
         // If this is the first route being registered, create the @remix-run/router instance
         if (wasEmpty && !this.#started) {
             this.#started = true;
             this.#initializeRemixRouter();
         }
+    }
+
+    #handlers: any = null;
+
+    #createRouteRequestHandler(handler: {
+        loader?: RouterLoader<any>;
+        component?: RouterComponent<any, Renderable>;
+    }) {
+        const loader =
+            handler && typeof handler.loader === "function" ? handler.loader : undefined;
+        const component =
+            handler && typeof handler.component === "function" ? handler.component : undefined;
+
+        if (!loader && !component) {
+            throw new Error("GET routes must define loader() or component()");
+        }
+
+        return async (context: HandlerContext<any>) => {
+            let loaderData: any = undefined;
+
+            if (loader) {
+                const result = await loader(context);
+
+                if (result instanceof Response) {
+                    throw new Error(
+                        "Loader functions used with component() must return plain data, not Response instances."
+                    );
+                }
+
+                loaderData = result;
+            }
+
+            if (!component) {
+                return loaderData;
+            }
+
+            const payload: RouteComponentPayload<Renderable> = {
+                component,
+                data: loaderData,
+                params: { ...context.params },
+                request: context.request,
+                url: new URL(context.url),
+                storage: context.storage,
+            };
+
+            return payload;
+        };
+    }
+
+    #flattenHandlers(handlers: any, result: any = {}): any {
+        if (!handlers || typeof handlers !== "object") {
+            return result;
+        }
+
+        for (const key in handlers) {
+            const handler = handlers[key];
+
+            if (typeof handler === "function") {
+                result[key] = handler;
+                continue;
+            }
+
+            if (!handler || typeof handler !== "object") {
+                continue;
+            }
+
+            const hasLoader = typeof handler.loader === "function";
+            const hasComponent = typeof handler.component === "function";
+
+            if (hasLoader || hasComponent) {
+                result[key] = this.#createRouteRequestHandler(handler);
+            }
+
+            if ("children" in handler && handler.children) {
+                this.#flattenHandlers(handler.children, result);
+            }
+        }
+
+        return result;
     }
 
     #resolveTo(to: To): string {
@@ -633,13 +868,40 @@ export class Router<Renderable = any> extends EventTarget {
                 };
             }
 
-            // Update outlet from loader data if available
+            // Compose outlets from leaf to root using component payloads
             if (state.matches.length > 0) {
-                const leafMatch = state.matches[state.matches.length - 1];
-                const data = state.loaderData[leafMatch.route.id];
-                if (data && data._element !== undefined) {
-                    this.#outlet = data._element;
+                let outlet: Renderable | null = null;
+
+                // Walk from leaf to root
+                for (let i = state.matches.length - 1; i >= 0; i--) {
+                    const match = state.matches[i];
+                    const data = state.loaderData[match.route.id];
+
+                    if (data && typeof data === "object" && "component" in data) {
+                        const payload = data as RouteComponentPayload<Renderable>;
+                        const rendered = payload.component({
+                            outlet,
+                            children: outlet,
+                            data: payload.data,
+                            loaderData: payload.data,
+                            params: payload.params,
+                            request: payload.request,
+                            url: payload.url,
+                            storage: payload.storage,
+                        });
+                        if (rendered && typeof rendered === "object" && "element" in rendered) {
+                            outlet = (rendered as { element: Renderable | null }).element ?? null;
+                        } else {
+                            outlet = (rendered as Renderable) ?? null;
+                        }
+                    } else if (data && typeof data === "object" && "element" in data) {
+                        outlet = (data as { element: Renderable | null }).element ?? null;
+                    } else if (data !== undefined) {
+                        outlet = data as Renderable;
+                    }
                 }
+
+                this.#outlet = outlet;
             }
 
             this.#dispatchState();
@@ -650,72 +912,139 @@ export class Router<Renderable = any> extends EventTarget {
     }
 
     #convertRoutesToDataRoutes(): AgnosticDataRouteObject[] {
-        if (!this.#routeMap) {
+        if (!this.#routeMap || !this.#handlers) {
             return [];
         }
 
-        // Extract all route patterns from the route map
-        const patterns = this.#extractPatternsFromRouteMap(this.#routeMap);
-
-        // Convert to AgnosticDataRouteObject[]
-        const dataRoutes: any[] = [];
-        let routeId = 0;
-
-        for (const pattern of patterns) {
-            const id = `route-${routeId++}`;
-            dataRoutes.push({
-                id,
-                path: pattern,
-                // Loader for GET requests - calls fetchRouter.fetch()
-                loader: async ({ request }: any) => {
-                    // Call fetchRouter.fetch() with the request
-                    // fetch-router will create a RequestContext with its own storage
-                    const response = await this.#fetchRouter.fetch(request);
-
-                    // Check for _element from render()
-                    if (response._element !== undefined) {
-                        return { _element: response._element };
-                    }
-
-                    // Try to parse as JSON
-                    const contentType = response.headers.get("Content-Type");
-                    if (contentType?.includes("application/json")) {
-                        return await response.json();
-                    }
-
-                    // Return the response as-is for remix-router to handle
-                    return response;
-                },
-                // Action for POST/PUT/DELETE/etc - calls fetchRouter.fetch()
-                action: async ({ request }: any) => {
-                    // Call fetchRouter.fetch() with the request
-                    // fetch-router will create a RequestContext with its own storage
-                    const response = await this.#fetchRouter.fetch(request);
-
-                    // Return the response for remix-router to handle redirects, etc.
-                    return response;
-                },
-            });
+        // Check if there's a root handler
+        if ("root" in this.#handlers && this.#handlers.root) {
+            // Build tree starting from root
+            return [this.#buildRouteTree("root", this.#routeMap, this.#handlers.root, "/")];
         }
 
-        return dataRoutes;
+        // Fallback: build flat routes
+        const patterns = this.#extractPatternsFromRouteMap(this.#routeMap);
+        return patterns.map((pattern, i) => this.#createRouteObject(`route-${i}`, pattern));
+    }
+
+    #buildRouteTree(
+        key: string,
+        routeMap: any,
+        handler: any,
+        basePath: string
+    ): AgnosticDataRouteObject {
+        const route = routeMap;
+        const pattern = this.#getRoutePattern(route, basePath);
+
+        const dataRoute: AgnosticDataRouteObject = {
+            id: key,
+            path: pattern,
+        };
+
+        // Add loader if handler has one or is a function
+        if (typeof handler === "function") {
+            dataRoute.loader = this.#createLoader();
+        } else if (handler && typeof handler === "object" && "loader" in handler) {
+            dataRoute.loader = this.#createLoader();
+        }
+
+        // Add action for mutations
+        dataRoute.action = this.#createAction();
+
+        // Process children if they exist
+        if (handler && typeof handler === "object" && "children" in handler && handler.children) {
+            const children: AgnosticDataRouteObject[] = [];
+
+            // Get the children from the route map
+            const routeChildren =
+                route && typeof route === "object" && "children" in route
+                    ? route.children
+                    : routeMap;
+
+            for (const childKey in handler.children) {
+                const childHandler = handler.children[childKey];
+                const childRoute = routeChildren[childKey];
+
+                if (childRoute) {
+                    const childPattern = this.#getRoutePattern(childRoute, pattern);
+                    const childDataRoute = this.#buildRouteTree(
+                        childKey,
+                        childRoute,
+                        childHandler,
+                        childPattern
+                    );
+                    children.push(childDataRoute);
+                }
+            }
+
+            if (children.length > 0) {
+                dataRoute.children = children;
+            }
+        }
+
+        return dataRoute;
+    }
+
+    #getRoutePattern(route: any, basePath: string): string {
+        if (!route) return basePath;
+
+        if (typeof route === "string") return route;
+
+        if ("pattern" in route) {
+            return route.pattern;
+        }
+
+        if ("match" in route && typeof route.match === "function") {
+            return (route as any).pattern || basePath;
+        }
+
+        return basePath;
+    }
+
+    #createLoader() {
+        return async ({ request }: any) => {
+            const result = await this.#fetchRouter.fetch(request);
+
+            // Try to parse as JSON
+            if (result instanceof Response) {
+                const contentType = result.headers.get("Content-Type");
+                if (contentType?.includes("application/json")) {
+                    return await result.json();
+                }
+                return result;
+            }
+
+            return result;
+        };
+    }
+
+    #createAction() {
+        return async ({ request }: any) => {
+            const response = await this.#fetchRouter.fetch(request);
+            return response;
+        };
+    }
+
+    #createRouteObject(id: string, pattern: string): AgnosticDataRouteObject {
+        return {
+            id,
+            path: pattern,
+            loader: this.#createLoader(),
+            action: this.#createAction(),
+        };
     }
 
     #extractPatternsFromRouteMap(routeMap: any, patterns: Set<string> = new Set()): string[] {
         for (const key in routeMap) {
             const route = routeMap[key];
 
-            // Check if this is a Route object (has a match method or pattern property)
             if (route && typeof route === "object") {
                 if ("match" in route && typeof route.match === "function") {
-                    // This is a Route object - extract pattern
                     const pattern = (route as any).pattern || key;
                     patterns.add(pattern);
                 } else if ("pattern" in route) {
-                    // Has a pattern property
                     patterns.add(route.pattern);
                 } else if (!("match" in route)) {
-                    // This is a nested RouteMap - recurse
                     this.#extractPatternsFromRouteMap(route, patterns);
                 }
             }

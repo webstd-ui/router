@@ -2,7 +2,6 @@
 // 🛑 Nothing in here has anything to do with Remix, it's just a fake database
 ////////////////////////////////////////////////////////////////////////////////
 
-import { createStorageKey } from "@remix-run/fetch-router";
 import { assert } from "@std/assert";
 import { delay as sleep } from "@std/async";
 import { matchSorter } from "match-sorter";
@@ -23,8 +22,6 @@ export type ContactRecord = ContactMutation & {
     id: string;
     createdAt: string;
 };
-
-export const CONTACTS_KEY = createStorageKey<ContactRecord[]>([]);
 
 ////////////////////////////////////////////////////////////////////////////////
 // This is just a fake DB table. In a real app you'd be talking to a real db or

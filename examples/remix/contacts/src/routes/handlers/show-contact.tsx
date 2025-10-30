@@ -1,24 +1,18 @@
 import { dom } from "@remix-run/events";
-import type { InferRouteHandler } from "@remix-run/fetch-router";
-import { render } from "@webstd-ui/router";
+import type { Remix } from "@remix-run/dom";
 import { Favorite } from "~/components/Favorite.tsx";
 import { RestfulForm } from "~/components/RestfulForm.tsx";
-import { CONTACTS_KEY, getContact, getContacts } from "~/lib/contacts.ts";
+import { getContact } from "~/lib/contacts.ts";
 import { routes } from "~/routes";
+import type { InferRouteHandler } from "./index.tsx";
 
-export const show: InferRouteHandler<typeof routes.contact.show> = async ({
-    params,
-    storage,
-    url,
-}) => {
-    const query = url.searchParams.get("q");
-    const contacts = await getContacts(query);
-    storage.set(CONTACTS_KEY, contacts);
-
-    const contact = (await getContact(params.contactId))!;
-    const hasAvatar = !!contact.avatar;
-
-    return render(
+export const show = {
+    async loader({ params }) {
+        const contact = (await getContact(params.contactId))!;
+        const hasAvatar = !!contact.avatar;
+        return { contact, hasAvatar };
+    },
+    component: ({ data: { contact, hasAvatar } }) => (
         <div id="contact">
             <div>
                 <img
@@ -83,5 +77,5 @@ export const show: InferRouteHandler<typeof routes.contact.show> = async ({
                 </div>
             </div>
         </div>
-    );
-};
+    ),
+} satisfies InferRouteHandler<typeof routes.contact.show, Remix.RemixNode>;

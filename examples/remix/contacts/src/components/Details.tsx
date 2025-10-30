@@ -1,15 +1,12 @@
 import type { Remix } from "@remix-run/dom";
-import { events } from "@remix-run/events";
-import { Router } from "@webstd-ui/router";
 import { App } from "~/app.tsx";
 
-export function Details(this: Remix.Handle) {
+export function Details(this: Remix.Handle, { children }: { children: Remix.RemixNode }) {
     const router = this.context.get(App);
-    events(router, [Router.update(() => this.update(), { signal: this.signal })]);
 
     return () => (
         <div class={router.navigating.to.state === "loading" ? "loading" : undefined} id="detail">
-            {router.outlet ? router.outlet : <p class="loading">Loading...</p>}
+            {children}
         </div>
     );
 }

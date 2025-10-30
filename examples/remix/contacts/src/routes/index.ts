@@ -1,7 +1,7 @@
 import { resources, route } from "@remix-run/fetch-router";
 
 export const routes = route({
-    index: "/",
+    index: { method: "GET", pattern: "/" },
     contact: {
         ...resources("/contact", {
             only: ["show", "edit", "destroy", "update", "create"],

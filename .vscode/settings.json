@@ -32,8 +32,8 @@
         "vite.config.*": "*.plugin.ts, babel.config.*, nitro.config.*, vitest.config.*"
     },
     "files.exclude": {
-        "**/.claude": true,
-        "**/dist": true
+        // "**/.claude": true,
+        // "**/dist": true
     },
 
     "todohighlight.keywords": [

@@ -1,12 +1,10 @@
 import type { Remix } from "@remix-run/dom";
-import { dom, events } from "@remix-run/events";
-import { Router } from "@webstd-ui/router";
+import { dom } from "@remix-run/events";
 import { App } from "~/app.tsx";
 import { RestfulForm } from "./RestfulForm.tsx";
 
 export function SearchBar(this: Remix.Handle) {
     const router = this.context.get(App);
-    events(router, [Router.update(() => this.update(), { signal: this.signal })]);
 
     let query: string | undefined;
 
@@ -26,7 +24,7 @@ export function SearchBar(this: Remix.Handle) {
                     defaultValue={query ?? ""}
                     id="q"
                     name="q"
-                    on={dom.input<HTMLInputElement>(async event => {
+                    on={dom.input(async event => {
                         // Remove empty query params when value is empty
                         if (!event.currentTarget.value) {
                             router.navigate(router.location.pathname + router.location.hash);

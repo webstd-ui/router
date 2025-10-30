@@ -24,10 +24,22 @@ import type {
     To,
 } from "./types.ts";
 
-declare global {
-    interface Response {
-        _element: any;
-    }
+interface ComponentPayload<Renderable, Data = unknown> {
+    component: (context: {
+        outlet: Renderable | null;
+        children: Renderable | null;
+        data: Data;
+        loaderData: Data;
+        params: Record<string, any>;
+        request?: Request;
+        url: URL;
+        storage: AppStorage;
+    }) => Renderable;
+    data: Data;
+    params: Record<string, any>;
+    request?: Request;
+    url: URL;
+    storage: AppStorage;
 }
 
 const [update, createUpdate] = createEventType("@webstd-ui/router:update");
@@ -541,39 +553,62 @@ export class Router<Renderable> extends EventTarget {
             });
         }
 
-        // If the result is a Response, handle it
         if (result instanceof Response) {
-            // Handle redirects
-            if (result.status >= 300 && result.status < 400) {
+            const status = result.status;
+            if (status >= 300 && status < 400) {
                 const location = result.headers.get("Location");
                 if (location) {
-                    // Throw a special redirect error that will be caught in #goto
                     throw {
                         redirect: location,
-                        replace: result.status === 303 || result.status === 307,
+                        replace: status === 303 || status === 307,
                     };
                 }
             }
 
-            // Handle responses with _element (from render())
-            if (result._element) {
-                return result._element;
-            }
-
-            // Handle JSON responses - just return current outlet unchanged
             const contentType = result.headers.get("Content-Type");
             if (contentType?.includes("application/json")) {
-                // For JSON responses, keep the current outlet
                 return this.#outlet;
             }
 
-            // Unknown response type
-            throw new Error(
-                "Response returned from handler does not have _element property. Make sure to use render() function for HTML responses."
-            );
+            // For other response types, fall back to current outlet.
+            return this.#outlet;
         }
 
-        return result;
+        if (result && typeof result === "object") {
+            if (
+                "component" in result &&
+                typeof (result as any).component === "function" &&
+                "params" in result &&
+                "url" in result &&
+                "storage" in result &&
+                "data" in result
+            ) {
+                const payload = result as ComponentPayload<Renderable>;
+
+                const rendered = payload.component({
+                    outlet: this.#outlet,
+                    children: this.#outlet,
+                    data: payload.data,
+                    loaderData: payload.data,
+                    params: payload.params,
+                    request: payload.request,
+                    url: payload.url,
+                    storage: payload.storage,
+                });
+
+                if (rendered && typeof rendered === "object" && "element" in rendered) {
+                    return (rendered as { element: Renderable | null }).element ?? null;
+                }
+
+                return rendered ?? null;
+            }
+
+            if ("element" in result) {
+                return (result as { element: Renderable | null }).element ?? null;
+            }
+        }
+
+        return result as Renderable | null;
     }
 
     /**

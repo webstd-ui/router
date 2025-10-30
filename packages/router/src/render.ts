@@ -1,12 +1,18 @@
+export interface RenderResult<Renderable> {
+    element: Renderable;
+    init?: ResponseInit;
+}
+
 /**
- * Attach a framework element to a {@link Response} for client reuse.
+ * Wrap a framework element so routers can recognise and render it without mutating {@link Response}.
  *
- * @param element - Framework (Remix, Preact, Solid, Lit) element tree to render in the outlet.
- * @param init - Optional response initialization options.
- * @returns Response containing the rendered stream and the captured element.
+ * @param element - Framework element tree to render in the outlet.
+ * @param init - Optional response initialization metadata (unused by the client router, surfaced for user-land).
+ * @returns Object containing the renderable element and optional response metadata.
  */
-export function render<Renderable>(element: Renderable, init?: ResponseInit) {
-    const response = new Response(null, init);
-    response._element = element;
-    return response;
+export function render<Renderable>(element: Renderable, init?: ResponseInit): RenderResult<Renderable> {
+    return {
+        element,
+        init,
+    };
 }

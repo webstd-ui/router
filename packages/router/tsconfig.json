@@ -1,5 +1,6 @@
 {
-    "include": ["**/*"],
+    "include": ["src/**/*.ts", "src/**/*.tsx", "examples/**/*.ts", "examples/**/*.tsx"],
+    "exclude": ["dist", "node_modules"],
     "compilerOptions": {
         "lib": ["DOM", "DOM.Iterable", "ESNext"],
         "target": "ESNext",
