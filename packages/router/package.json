@@ -45,6 +45,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "catalog:tools",
+        "@types/dom-navigation": "^1.0.6",
         "@typescript/native-preview": "catalog:tools",
         "tsdown": "catalog:dev"
     }

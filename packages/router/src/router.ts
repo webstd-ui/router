@@ -1,4 +1,5 @@
 import {
+    bind,
     createEventType,
     createInteraction,
     doc,
@@ -23,6 +24,7 @@ import type {
     SubmitTarget,
     To,
 } from "./types.ts";
+import { nav } from "./targets.ts";
 
 declare global {
     interface Response {
@@ -64,6 +66,7 @@ export class Router<Renderable> extends EventTarget {
     #storage: AppStorage;
     #currentNavigationAbortController: AbortController | null = null;
     #lastRevalidationTimestamp: number = 0;
+    #useNavigationAPI: boolean;
 
     /**
      * Latest resolved browser location after the most recent successful navigation.
@@ -113,6 +116,7 @@ export class Router<Renderable> extends EventTarget {
     constructor({ globallyEnhance = true }: Router.Options = {}) {
         super();
 
+        this.#useNavigationAPI = "navigation" in window;
         this.#location = window.location;
         this.#storage = new AppStorage();
         this.#navigating = {
@@ -140,14 +144,16 @@ export class Router<Renderable> extends EventTarget {
             },
         };
 
+        // Handle routing events
         if (globallyEnhance) {
-            // Handle routing events
-            events(document, [this.#handleClick, this.#handleSubmit]);
-            events(window, [
-                win.popstate(() => {
-                    this.#gotoSelf();
-                }),
-            ]);
+            if (!this.#useNavigationAPI) {
+                events(document, [this.#handleClick, this.#handleSubmit]);
+            } else {
+                events(window.navigation, [this.#handleNavigate]);
+                // events(document, [this.#handleSubmit]);
+            }
+
+            events(window, [win.popstate(() => this.#gotoSelf())]);
         }
     }
 
@@ -223,6 +229,77 @@ export class Router<Renderable> extends EventTarget {
         }
 
         this.submit(form, { method: method as FormMethod });
+    });
+
+    #handleNavigate = nav.navigate(event => {
+        // Only intercept same-origin navigations that can be intercepted
+        if (!event.canIntercept) {
+            return;
+        }
+
+        // Don't intercept if this is a different origin
+        const destination = new URL(event.destination.url);
+        if (destination.origin !== origin) {
+            return;
+        }
+
+        // Don't intercept hash-only changes - let browser handle them
+        if (event.hashChange) {
+            return;
+        }
+
+        // Don't intercept if download attribute is present
+        if (event.downloadRequest) {
+            return;
+        }
+
+        // Intercept the navigation and handle it as SPA navigation
+        event.intercept({
+            handler: async () => {
+                const targetPath = destination.pathname + destination.search + destination.hash;
+
+                // Handle form submissions
+                if (event.formData) {
+                    // Check for method override in form data
+                    const methodOverride = event.formData.get("webstd-ui:method");
+                    let method: FormMethod = "POST";
+
+                    if (methodOverride && typeof methodOverride === "string") {
+                        method = methodOverride.toUpperCase() as FormMethod;
+                    } else if (
+                        destination.searchParams.size > 0 &&
+                        !event.formData.get("webstd-ui:method")
+                    ) {
+                        // If data is in URL params and no method override, this is likely a GET form
+                        method = "GET";
+                    }
+
+                    // Clean form data by removing method override
+                    const cleanFormData = new FormData();
+                    for (const [key, value] of event.formData.entries()) {
+                        if (key !== "webstd-ui:method") {
+                            cleanFormData.append(key, value);
+                        }
+                    }
+
+                    // For GET form submissions, the data is already in the URL
+                    // so we don't pass formData in the body
+                    if (method === "GET") {
+                        await this.#goto(targetPath);
+                    } else {
+                        await this.#goto(targetPath, {
+                            formMethod: method,
+                            formAction: targetPath,
+                            formEncType: "application/x-www-form-urlencoded",
+                            formData: cleanFormData,
+                        });
+                    }
+                } else {
+                    // Regular navigation (link click or programmatic navigation)
+                    await this.#goto(targetPath);
+                }
+            },
+        });
     });
 
     async #goto(
@@ -681,17 +758,29 @@ export class Router<Renderable> extends EventTarget {
         const currentPath =
             window.location.pathname + window.location.search + window.location.hash;
 
-        // Update history only if the path is different
-        if (pathname !== currentPath) {
-            if (options.replace) {
-                window.history.replaceState({}, "", pathname);
-            } else {
-                window.history.pushState({}, "", pathname);
+        // When using the Navigation API, let it handle the navigation
+        // The navigate event handler will call #goto
+        if (this.#useNavigationAPI) {
+            if (pathname !== currentPath) {
+                const result = window.navigation.navigate(pathname, {
+                    history: options.replace ? "replace" : "auto",
+                });
+                // Wait for the navigation to complete
+                await result.finished;
             }
-        }
+        } else {
+            // Fallback to History API
+            if (pathname !== currentPath) {
+                if (options.replace) {
+                    window.history.replaceState({}, "", pathname);
+                } else {
+                    window.history.pushState({}, "", pathname);
+                }
+            }
 
-        // Perform navigation
-        await this.#goto(pathname, undefined, { signal: options.signal });
+            // Perform navigation
+            await this.#goto(pathname, undefined, { signal: options.signal });
+        }
     }
 
     /**
@@ -763,29 +852,49 @@ export class Router<Renderable> extends EventTarget {
             formData = undefined;
         }
 
-        // Update history only for GET requests
-        // Non-GET requests (POST, PUT, DELETE, etc.) should not change the URL or add history entries
-        if (options.navigate !== false && formMethod === "GET") {
-            if (options.replace) {
-                window.history.replaceState({}, "", formAction);
+        // For GET requests with Navigation API, use navigation.navigate()
+        // For non-GET requests, call #goto directly (mutations don't navigate)
+        if (formMethod === "GET" && this.#useNavigationAPI) {
+            // Use Navigation API for GET form submissions
+            if (options.navigate !== false) {
+                const result = window.navigation.navigate(formAction, {
+                    history: options.replace ? "replace" : "auto",
+                });
+                // Wait for the navigation to complete
+                await result.finished;
             } else {
-                window.history.pushState({}, "", formAction);
+                // If navigate is false, call #goto directly without updating history
+                await this.#goto(formAction, undefined, {
+                    navigate: false,
+                    signal: options.signal,
+                });
             }
-        }
+        } else {
+            // Use History API or handle mutations directly
+            // Update history only for GET requests
+            // Non-GET requests (POST, PUT, DELETE, etc.) should not change the URL or add history entries
+            if (options.navigate !== false && formMethod === "GET") {
+                if (options.replace) {
+                    window.history.replaceState({}, "", formAction);
+                } else {
+                    window.history.pushState({}, "", formAction);
+                }
+            }
 
-        // Perform submission
-        await this.#goto(
-            formAction,
-            {
-                formMethod,
+            // Perform submission
+            await this.#goto(
                 formAction,
-                formEncType,
-                formData,
-                json,
-                text,
-            },
-            { navigate: options.navigate, signal: options.signal }
-        );
+                {
+                    formMethod,
+                    formAction,
+                    formEncType,
+                    formData,
+                    json,
+                    text,
+                },
+                { navigate: options.navigate, signal: options.signal }
+            );
+        }
     }
 
     /**
