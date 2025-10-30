@@ -18,6 +18,8 @@ catalogs:
         "@remix-run/lazy-file": latest
         "@remix-run/node-fetch-server": latest
         "@remix-run/route-pattern": latest
+        "@remix-run/html-template": latest
+        "@remix-run/router": ^1.23.0
     crank:
         "@b9g/crank": ^0.7.2
     std:

@@ -8,7 +8,7 @@ import {
     events,
     win,
 } from "@remix-run/events";
-import { connect } from "@remix-run/dom";
+// import { connect } from "@remix-run/dom";
 import { AppStorage, type RouteHandlers, type RouteMap } from "@remix-run/fetch-router";
 import type {
     FormEncType,
@@ -1000,38 +1000,38 @@ export class Router<Renderable> extends EventTarget {
      * @param styles - Configuration object with activeClass and/or pendingClass
      * @param options - Optional event listener options (e.g., signal for cleanup)
      */
-    navLink(
-        styles: { activeClass?: string; pendingClass?: string },
-        options: AddEventListenerOptions = {}
-    ): EventDescriptor<HTMLAnchorElement> {
-        return connect(event => {
-            const anchor = event.currentTarget as HTMLAnchorElement;
-            const targetPath = anchor.pathname + anchor.search + anchor.hash;
+    // navLink(
+    //     styles: { activeClass?: string; pendingClass?: string },
+    //     options: AddEventListenerOptions = {}
+    // ): EventDescriptor<HTMLAnchorElement> {
+    //     return connect(event => {
+    //         const anchor = event.currentTarget as HTMLAnchorElement;
+    //         const targetPath = anchor.pathname + anchor.search + anchor.hash;
 
-            // Helper to update classes based on current state
-            const updateClasses = () => {
-                const active = this.isActive(targetPath);
-                const pending = !active && this.isPending(targetPath);
+    //         // Helper to update classes based on current state
+    //         const updateClasses = () => {
+    //             const active = this.isActive(targetPath);
+    //             const pending = !active && this.isPending(targetPath);
 
-                const { activeClass, pendingClass } = styles ?? {};
+    //             const { activeClass, pendingClass } = styles ?? {};
 
-                if (activeClass) anchor.classList.toggle(activeClass, active);
-                if (pendingClass) anchor.classList.toggle(pendingClass, pending);
+    //             if (activeClass) anchor.classList.toggle(activeClass, active);
+    //             if (pendingClass) anchor.classList.toggle(pendingClass, pending);
 
-                // If neither state applies, both toggles above remove their classes.
-                // Drop the attribute entirely if no classes remain.
-                if (!anchor.classList.length) {
-                    anchor.removeAttribute("class");
-                }
-            };
+    //             // If neither state applies, both toggles above remove their classes.
+    //             // Drop the attribute entirely if no classes remain.
+    //             if (!anchor.classList.length) {
+    //                 anchor.removeAttribute("class");
+    //             }
+    //         };
 
-            // Apply initial classes
-            updateClasses();
+    //         // Apply initial classes
+    //         updateClasses();
 
-            // Listen to router updates and return cleanup function
-            return events(this, [Router.update(updateClasses)]);
-        }, options);
-    }
+    //         // Listen to router updates and return cleanup function
+    //         return events(this, [Router.update(updateClasses)]);
+    //     }, options);
+    // }
 
     /**
      * Wrap a form submission handler to emit optimistic updates while the mutation is pending.

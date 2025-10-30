@@ -1,4 +1,5 @@
 import type { RequestMethod } from "@remix-run/fetch-router";
+import type { Location as RemixLocation } from "@remix-run/router";
 
 /** Uppercase HTTP methods accepted by the client router's navigation APIs. */
 export type FormMethod = RequestMethod;
@@ -69,7 +70,7 @@ export type NavigationStates = {
     };
     Loading: {
         state: "loading";
-        location: Location;
+        location: RemixLocation;
         url: URL;
         formMethod: Submission["formMethod"] | undefined;
         formAction: Submission["formAction"] | undefined;
@@ -80,7 +81,7 @@ export type NavigationStates = {
     };
     Submitting: {
         state: "submitting";
-        location: Location;
+        location: RemixLocation;
         url: URL;
         formMethod: Submission["formMethod"];
         formAction: Submission["formAction"];
