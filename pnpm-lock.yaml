@@ -29,7 +29,10 @@ catalogs:
       version: 0.0.0-experimental-remix-jam.5
     '@remix-run/fetch-router':
       specifier: latest
-      version: 0.6.0
+      version: 0.7.0
+    '@remix-run/route-pattern':
+      specifier: latest
+      version: 0.14.0
     '@remix-run/style':
       specifier: jam
       version: 0.0.0-experimental-remix-jam.5
@@ -46,7 +49,7 @@ catalogs:
       version: 2.3.0
     '@typescript/native-preview':
       specifier: latest
-      version: 7.0.0-dev.20251029.1
+      version: 7.0.0-dev.20251031.1
     prettier:
       specifier: ^3.6.2
       version: 3.6.2
@@ -66,7 +69,7 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: catalog:remix
-        version: 0.6.0
+        version: 0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
       '@std/assert':
         specifier: catalog:std
         version: '@jsr/std__assert@1.0.15'
@@ -88,7 +91,7 @@ importers:
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251029.1
+        version: 7.0.0-dev.20251031.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.20(jiti@2.6.1)
@@ -106,7 +109,7 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: catalog:remix
-        version: 0.6.0
+        version: 0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
       '@std/assert':
         specifier: catalog:std
         version: '@jsr/std__assert@1.0.15'
@@ -137,7 +140,7 @@ importers:
         version: 6.1.0(@babel/core@7.28.5)
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251029.1
+        version: 7.0.0-dev.20251031.1
       prettier:
         specifier: catalog:tools
         version: 3.6.2
@@ -164,7 +167,7 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: catalog:remix
-        version: 0.6.0
+        version: 0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
       '@remix-run/style':
         specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
@@ -177,7 +180,7 @@ importers:
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251029.1
+        version: 7.0.0-dev.20251031.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.20(jiti@2.6.1)
@@ -192,7 +195,7 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: catalog:remix
-        version: 0.6.0
+        version: 0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
       '@remix-run/style':
         specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
@@ -217,7 +220,7 @@ importers:
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251029.1
+        version: 7.0.0-dev.20251031.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.20(jiti@2.6.1)
@@ -232,7 +235,7 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: catalog:remix
-        version: 0.6.0
+        version: 0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
       '@remix-run/style':
         specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
@@ -248,7 +251,7 @@ importers:
         version: 2.3.0
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251029.1
+        version: 7.0.0-dev.20251031.1
       vite:
         specifier: npm:rolldown-vite@latest
         version: rolldown-vite@7.1.20(jiti@2.6.1)
@@ -260,17 +263,23 @@ importers:
         version: 0.0.0-experimental-remix-jam.5
       '@remix-run/fetch-router':
         specifier: catalog:remix
-        version: 0.6.0
+        version: 0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)
+      '@remix-run/route-pattern':
+        specifier: catalog:remix
+        version: 0.14.0
     devDependencies:
       '@biomejs/biome':
         specifier: catalog:tools
         version: 2.3.0
+      '@types/dom-navigation':
+        specifier: ^1.0.6
+        version: 1.0.6
       '@typescript/native-preview':
         specifier: catalog:tools
-        version: 7.0.0-dev.20251029.1
+        version: 7.0.0-dev.20251031.1
       tsdown:
         specifier: catalog:dev
-        version: 0.15.9(@typescript/native-preview@7.0.0-dev.20251029.1)
+        version: 0.15.9(@typescript/native-preview@7.0.0-dev.20251031.1)
 
 packages:
 
@@ -609,14 +618,22 @@ packages:
   '@remix-run/events@0.0.0-experimental-remix-jam.5':
     resolution: {integrity: sha512-rbKP27/YkLZq0gbCy3QpwaHQzJg41IgbC//8SggPgMtWxZdxkcnkWmQGMLH0xwQcBlZ3yLtZRDQvL+ir4GAA6g==}
 
-  '@remix-run/fetch-router@0.6.0':
-    resolution: {integrity: sha512-N5AMK2XxTFO3d8AMRWphFoRos4NjvfZpQeZW859Ade+FgP1yYRZhEYep2T3FVPBUJWPqrG7c9lIxVLcVcZUBSQ==}
+  '@remix-run/fetch-router@0.7.0':
+    resolution: {integrity: sha512-hcsosvDrhewWmuTceWcA4850T7tADp87mhYZlyDmTZZG+PdrqOnDnGhWrxRbAOfAK5CW/hS/FYJrt9/uNdmASg==}
+    peerDependencies:
+      '@remix-run/form-data-parser': 0.12.0
+      '@remix-run/headers': 0.14.0
+      '@remix-run/html-template': 0.2.0
+      '@remix-run/route-pattern': 0.14.0
 
   '@remix-run/form-data-parser@0.11.0':
     resolution: {integrity: sha512-vD1xko5NntvKKzCOM6hAmCfUOPguIWJJ3WqcBFMqqUYlk3Z4j9t4CpvL0taq9gaB8kMtYN78lD4r8Nb8xXI4zw==}
 
   '@remix-run/headers@0.12.0':
     resolution: {integrity: sha512-eqVSL5UOIyqVx0NTqgtNKMKVokE9jPchkZHl/N13KKPQYw/leS8VCoX5zRhkB1UvcLyfj113LX0OvEcuNbc5Hg==}
+
+  '@remix-run/html-template@0.2.0':
+    resolution: {integrity: sha512-CwmFgbUroD2082lK6ALHCryqOxrn3FtMf7uf554fN8Zq5H9aDafPYWpEZ01GvpaKuPVlWwyojhqcs1nOOgLwpA==}
 
   '@remix-run/multipart-parser@0.11.0':
     resolution: {integrity: sha512-AE/H+ok0fWOZb84sJ8vREOJiSwYoEoGL0rpHZSAiPmCkBKbnsmHCbiUtg5+wELem4Q0HAEY6vjVK83u9cIlAhw==}
@@ -834,49 +851,52 @@ packages:
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
+  '@types/dom-navigation@1.0.6':
+    resolution: {integrity: sha512-4srBpebg8rFDm0LafYuWhZMgLoSr5J4gx4q1uaTqOXwVk00y+CkTdJ4SC57sR1cMhP0ZRjApMRdHVcFYOvPGTw==}
+
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-DBJ3jFP6/MaQj/43LN1TC7tjR4SXZUNDnREiVjtFzpOG4Q71D1LB6QryskkRZsNtxLaTuVV57l2ubCE8tNmz0w==}
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-MtH30d/l+mf1lbvOIjm6OmSddC43L/eGo71+JoMRxAgEJK8suPauk5aw7P14vaqtQHtkykobefWF9xeuos/HLQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-fnxZZtlXeud6f3bev3q50QMR+FrnuTyVr5akp5G2/o4jfkqLV6cKzseGnY6so+ftwfwP/PX3GOkfL6Ag8NzR0Q==}
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-YhV52UHpDKfXIWT+fL2OpLCcz0lZNXzqdvsChVxRxJ7AdFYogYgklafpTzq3yv2dGx5gZYDm0McfaTGSpP4V3Q==}
     cpu: [x64]
     os: [darwin]
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-WK/N4Tk9nxI+k6AwJ7d80Gnd4+8kbBwmryIgOGPQNNvNJticYg6QiQsFGgC+HnCqvWDQ0fAyW+wdcPG6fwn/EA==}
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-+ldy1PpQ+ptr/tn6Pp9DGsoxMNHi0zs3aBjiXszeAhK47b0mbLVyXfwlssJU3R88Pjbq7sSlKeZl7DgugCrRlg==}
     cpu: [arm64]
     os: [linux]
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-1ok8pxcIlwMTMggySPIVt926lymLWNhCgPTzO751zKFTDTJcmpzmpmSWbiFQQ3fcPzO8LocsLXRfBwYDd/uqQA==}
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-leCHB/SwEbf1UPsBLD2sJcAxXpYdgTh8UO566qEiWF64nTbNwouq3+tCeOMgAzFsS6HoRtIdUrLYmlnthQLUkA==}
     cpu: [arm]
     os: [linux]
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-GvTl9BeItX0Ox0wXiMIHkktl9sCTkTPBe6f6hEs4XfJlAKm+JHbYtB9UEs62QyPYBFMx2phCytVNejpaUZRJmQ==}
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-a8rPIQPJEL3XVva11QBMghtCMLhGLLpbOgQgF+Sybjbc3UkMEyRtmlLhu8qFTNT2/96Psb6REvho4Na98dKP0g==}
     cpu: [x64]
     os: [linux]
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-BUEC+M6gViaa/zDzOjAOEqpOZeUJxuwrjwOokqxXyUavX+mC6zb6ALqx4r7GAWrfY9sSvGUacW4ZbqDTXe8KAg==}
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-1nxWP6zlVlsapFfSi6Dg8qsMNuYliWPxj0oc+iaILm5+Lx4vdfcaLBu28tF3vbF366XIEyKAMCwDTj1UF9rklw==}
     cpu: [arm64]
     os: [win32]
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-ODcXFgM62KpXxHqG5NMG+ipBqTbQ1pGkrzSByBwgRx0c/gTUhgML8UT7iK3nTrTtp9OBgPYPLLDNwiSLyzaIxA==}
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-wy56Wk7XB7sS9o+JYnummfT+US1DiOufrVLdzCM91gwDGbIwScfOkpWyK3hM/rwMIaClp5PAqrlG1+kxL34RPA==}
     cpu: [x64]
     os: [win32]
 
-  '@typescript/native-preview@7.0.0-dev.20251029.1':
-    resolution: {integrity: sha512-IRmYCDgwZQEfjy2GNJnQbqoRUrvdCbzLE0sLhwc6TP4I0Hx5TnHv3sJGKAgdmcbHmKHtwJeppXjgTRGtFTWRHQ==}
+  '@typescript/native-preview@7.0.0-dev.20251031.1':
+    resolution: {integrity: sha512-EUzSWMrK4rFvF2h4X7bqYcm+LzxuKRh8aN0/g3PlRVjKbJzn3ntoDAO5rAXrrAIkDvkIGH5GPZZnx4hnn3GcSg==}
     hasBin: true
 
   ansis@4.2.0:
@@ -1631,9 +1651,11 @@ snapshots:
 
   '@remix-run/events@0.0.0-experimental-remix-jam.5': {}
 
-  '@remix-run/fetch-router@0.6.0':
+  '@remix-run/fetch-router@0.7.0(@remix-run/form-data-parser@0.11.0)(@remix-run/headers@0.12.0)(@remix-run/html-template@0.2.0)(@remix-run/route-pattern@0.14.0)':
     dependencies:
       '@remix-run/form-data-parser': 0.11.0
+      '@remix-run/headers': 0.12.0
+      '@remix-run/html-template': 0.2.0
       '@remix-run/route-pattern': 0.14.0
 
   '@remix-run/form-data-parser@0.11.0':
@@ -1641,6 +1663,8 @@ snapshots:
       '@remix-run/multipart-parser': 0.11.0
 
   '@remix-run/headers@0.12.0': {}
+
+  '@remix-run/html-template@0.2.0': {}
 
   '@remix-run/multipart-parser@0.11.0':
     dependencies:
@@ -1769,40 +1793,42 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@types/dom-navigation@1.0.6': {}
+
   '@types/estree@1.0.8': {}
 
   '@types/trusted-types@2.0.7': {}
 
-  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-darwin-arm64@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-darwin-x64@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-linux-arm64@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview-linux-arm@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-linux-arm@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview-linux-x64@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-linux-x64@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-win32-arm64@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview-win32-x64@7.0.0-dev.20251029.1':
+  '@typescript/native-preview-win32-x64@7.0.0-dev.20251031.1':
     optional: true
 
-  '@typescript/native-preview@7.0.0-dev.20251029.1':
+  '@typescript/native-preview@7.0.0-dev.20251031.1':
     optionalDependencies:
-      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20251029.1
-      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20251029.1
-      '@typescript/native-preview-linux-arm': 7.0.0-dev.20251029.1
-      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20251029.1
-      '@typescript/native-preview-linux-x64': 7.0.0-dev.20251029.1
-      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251029.1
-      '@typescript/native-preview-win32-x64': 7.0.0-dev.20251029.1
+      '@typescript/native-preview-darwin-arm64': 7.0.0-dev.20251031.1
+      '@typescript/native-preview-darwin-x64': 7.0.0-dev.20251031.1
+      '@typescript/native-preview-linux-arm': 7.0.0-dev.20251031.1
+      '@typescript/native-preview-linux-arm64': 7.0.0-dev.20251031.1
+      '@typescript/native-preview-linux-x64': 7.0.0-dev.20251031.1
+      '@typescript/native-preview-win32-arm64': 7.0.0-dev.20251031.1
+      '@typescript/native-preview-win32-x64': 7.0.0-dev.20251031.1
 
   ansis@4.2.0: {}
 
@@ -2019,7 +2045,7 @@ snapshots:
 
   resolve-pkg-maps@1.0.0: {}
 
-  rolldown-plugin-dts@0.16.12(@typescript/native-preview@7.0.0-dev.20251029.1)(rolldown@1.0.0-beta.44):
+  rolldown-plugin-dts@0.16.12(@typescript/native-preview@7.0.0-dev.20251031.1)(rolldown@1.0.0-beta.44):
     dependencies:
       '@babel/generator': 7.28.5
       '@babel/parser': 7.28.5
@@ -2032,7 +2058,7 @@ snapshots:
       magic-string: 0.30.21
       rolldown: 1.0.0-beta.44
     optionalDependencies:
-      '@typescript/native-preview': 7.0.0-dev.20251029.1
+      '@typescript/native-preview': 7.0.0-dev.20251031.1
     transitivePeerDependencies:
       - oxc-resolver
       - supports-color
@@ -2113,7 +2139,7 @@ snapshots:
 
   tree-kill@1.2.2: {}
 
-  tsdown@0.15.9(@typescript/native-preview@7.0.0-dev.20251029.1):
+  tsdown@0.15.9(@typescript/native-preview@7.0.0-dev.20251031.1):
     dependencies:
       ansis: 4.2.0
       cac: 6.7.14
@@ -2123,7 +2149,7 @@ snapshots:
       empathic: 2.0.0
       hookable: 5.5.3
       rolldown: 1.0.0-beta.44
-      rolldown-plugin-dts: 0.16.12(@typescript/native-preview@7.0.0-dev.20251029.1)(rolldown@1.0.0-beta.44)
+      rolldown-plugin-dts: 0.16.12(@typescript/native-preview@7.0.0-dev.20251031.1)(rolldown@1.0.0-beta.44)
       semver: 7.7.3
       tinyexec: 1.0.1
       tinyglobby: 0.2.15

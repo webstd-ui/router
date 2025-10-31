@@ -8,6 +8,7 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "allowImportingTsExtensions": true,
+        "types": ["@types/dom-navigation"],
 
         "checkJs": true,
         "verbatimModuleSyntax": true,
