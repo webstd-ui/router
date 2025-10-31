@@ -2,11 +2,14 @@
 // 🛑 Nothing in here has anything to do with Remix, it's just a fake database
 ////////////////////////////////////////////////////////////////////////////////
 
+import { createStorageKey } from "@remix-run/fetch-router";
 import { assert } from "@std/assert";
 import { delay as sleep } from "@std/async";
 import { matchSorter } from "match-sorter";
 // @ts-expect-error - no types, but it's a tiny function
 import sortBy from "sort-by";
+
+export const CONTACTS_KEY = createStorageKey<ContactRecord[]>([]);
 
 type ContactMutation = {
     id?: string;

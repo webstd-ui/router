@@ -21,26 +21,26 @@ export function Sidebar({ contacts }: { contacts: ContactRecord[] }) {
     );
 }
 
-function SidebarItem(this: Remix.Handle, props: { contact: ContactRecord }) {
+function SidebarItem(this: Remix.Handle) {
     const router = this.context.get(App);
 
-    return () => {
+    return ({ contact }: { contact: ContactRecord }) => {
         const href =
             routes.contact.show.href({
-                contactId: String(props.contact.id),
+                contactId: String(contact.id),
             }) + router.location.search;
 
         return (
             <li>
                 <a href={href} class={router.when(href, { active: "active", pending: "pending" })}>
-                    {props.contact.first || props.contact.last ? (
+                    {contact.first || contact.last ? (
                         <>
-                            {props.contact.first} {props.contact.last}
+                            {contact.first} {contact.last}
                         </>
                     ) : (
                         <i>No Name</i>
                     )}
-                    {props.contact.favorite && <span>★</span>}
+                    {contact.favorite && <span>★</span>}
                 </a>
             </li>
         );

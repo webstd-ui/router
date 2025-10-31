@@ -1,16 +1,22 @@
-import type { Remix } from "@remix-run/dom";
-import { CancelButton } from "~/components/CancelButton.tsx";
+import { dom } from "@remix-run/events";
+import type { InferRouteHandler } from "@remix-run/fetch-router";
+import { render } from "@webstd-ui/router";
 import { RestfulForm } from "~/components/RestfulForm.tsx";
-import { getContact } from "~/lib/contacts.ts";
+import { CONTACTS_KEY, getContact, getContacts } from "~/lib/contacts.ts";
 import { routes } from "~/routes";
-import type { InferRouteHandler } from "./index.tsx";
 
-export const edit = {
-    async loader({ params }) {
-        const contact = (await getContact(params.contactId))!;
-        return contact;
-    },
-    component: ({ data: contact, params }) => (
+export const edit: InferRouteHandler<typeof routes.contact.edit> = async ({
+    params,
+    storage,
+    url,
+}) => {
+    const query = url.searchParams.get("q");
+    const contacts = await getContacts(query);
+    storage.set(CONTACTS_KEY, contacts);
+
+    const contact = (await getContact(params.contactId))!;
+
+    return render(
         <RestfulForm
             action={routes.contact.update.href({ contactId: params.contactId })}
             id="contact-form"
@@ -58,8 +64,10 @@ export const edit = {
             </label>
             <p>
                 <button type="submit">Save</button>
-                <CancelButton />
+                <button on={dom.click(() => history.back())} type="button">
+                    Cancel
+                </button>
             </p>
         </RestfulForm>
-    ),
-} satisfies InferRouteHandler<typeof routes.contact.edit, Remix.RemixNode>;
+    );
+};

@@ -31,7 +31,7 @@ type ExtractHandler<T> = T extends (...args: any) => any
     ? ExtractHandler<H>
     : never;
 
-type HandlerContext<T extends AnyRouteDef> = Parameters<ExtractHandler<InferRouteHandler<T>>>[0];
+export type HandlerContext<T extends AnyRouteDef> = Parameters<ExtractHandler<InferRouteHandler<T>>>[0];
 
 type AwaitedLoaderData<L> = L extends (...args: any) => infer R ? Awaited<R> : never;
 
@@ -145,6 +145,14 @@ interface RouteComponentPayload<Renderable = any, LoaderData = unknown> {
     request: Request;
     url: URL;
     storage: AppStorage;
+}
+
+declare global {
+    interface Response {
+        _element?: any;
+        _component?: (outlet: any) => any;
+        _data?: any;
+    }
 }
 
 // Cache the origin since it can't change
