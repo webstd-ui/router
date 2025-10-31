@@ -8,7 +8,6 @@ import {
     events,
     win,
 } from "@remix-run/events";
-import { connect } from "@remix-run/dom";
 import { AppStorage, type RouteHandlers, type RouteMap } from "@remix-run/fetch-router";
 import type {
     FormEncType,
@@ -794,7 +793,8 @@ export class Router<Renderable> extends EventTarget {
      * @param path - The path to check
      * @param exact - If true, requires exact match. Default is false (partial match)
      */
-    isActive(path: string | URL | Path, exact = false): boolean {
+    isActive(path: string | URL | Path | undefined, exact = false): boolean {
+        if (!path) return false;
         const pathname = this.#pathToString(path);
         const currentPath = this.#location.pathname;
 
@@ -816,7 +816,8 @@ export class Router<Renderable> extends EventTarget {
      * @param path - The path to check
      * @param exact - If true, requires exact match. Default is false (partial match)
      */
-    isPending(path: string | URL | Path, exact = false): boolean {
+    isPending(path: string | URL | Path | undefined, exact = false): boolean {
+        if (!path) return false;
         if (this.#navigating.to.state === "idle") {
             return false;
         }
@@ -836,6 +837,21 @@ export class Router<Renderable> extends EventTarget {
             return pendingPath === "/";
         }
         return pendingPath === pathname || pendingPath.startsWith(`${pathname}/`);
+    }
+
+    when<T, U>(
+        path: string | URL | Path | undefined,
+        options: { active: T; pending: U }
+    ): T | U | undefined {
+        if (this.isActive(path)) {
+            return options.active;
+        }
+
+        if (this.isPending(path)) {
+            return options.pending;
+        }
+
+        return undefined;
     }
 
     /**
@@ -982,54 +998,6 @@ export class Router<Renderable> extends EventTarget {
             if (href !== window.location.href) {
                 void this.navigate(targetPath, {});
             }
-        }, options);
-    }
-
-    /**
-     * Create an event descriptor that manages active and pending classes on a navigation link.
-     * Unlike {@link enhanceLink}, this method applies classes immediately on mount and keeps
-     * them in sync with router state changes.
-     *
-     * @example
-     * ```tsx
-     * <a href="/about" on={router.navLink({ activeClass: 'active', pendingClass: 'loading' })}>
-     *   About
-     * </a>
-     * ```
-     *
-     * @param styles - Configuration object with activeClass and/or pendingClass
-     * @param options - Optional event listener options (e.g., signal for cleanup)
-     */
-    navLink(
-        styles: { activeClass?: string; pendingClass?: string },
-        options: AddEventListenerOptions = {}
-    ): EventDescriptor<HTMLAnchorElement> {
-        return connect(event => {
-            const anchor = event.currentTarget as HTMLAnchorElement;
-            const targetPath = anchor.pathname + anchor.search + anchor.hash;
-
-            // Helper to update classes based on current state
-            const updateClasses = () => {
-                const active = this.isActive(targetPath);
-                const pending = !active && this.isPending(targetPath);
-
-                const { activeClass, pendingClass } = styles ?? {};
-
-                if (activeClass) anchor.classList.toggle(activeClass, active);
-                if (pendingClass) anchor.classList.toggle(pendingClass, pending);
-
-                // If neither state applies, both toggles above remove their classes.
-                // Drop the attribute entirely if no classes remain.
-                if (!anchor.classList.length) {
-                    anchor.removeAttribute("class");
-                }
-            };
-
-            // Apply initial classes
-            updateClasses();
-
-            // Listen to router updates and return cleanup function
-            return events(this, [Router.update(updateClasses)]);
         }, options);
     }
 

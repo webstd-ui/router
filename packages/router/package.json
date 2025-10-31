@@ -39,7 +39,6 @@
         "LICENSE"
     ],
     "dependencies": {
-        "@remix-run/dom": "catalog:remix",
         "@remix-run/events": "catalog:remix",
         "@remix-run/fetch-router": "catalog:remix"
     },

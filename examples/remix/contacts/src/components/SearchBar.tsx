@@ -11,7 +11,7 @@ export function SearchBar(this: Remix.Handle) {
     let query: string | undefined;
 
     return () => {
-        const searching = Boolean(router.navigating.to.url?.searchParams.has("q"));
+        const searching = router.navigating.to.url?.searchParams.has("q");
         const currentQuery = router.url.searchParams.get("q") ?? undefined;
 
         if (query !== currentQuery) {
@@ -22,11 +22,11 @@ export function SearchBar(this: Remix.Handle) {
             <RestfulForm id="search-form">
                 <input
                     aria-label="Search contacts"
-                    class={searching ? "loading" : ""}
+                    class={searching ? "loading" : undefined}
                     defaultValue={query ?? ""}
                     id="q"
                     name="q"
-                    on={dom.input<HTMLInputElement>(async event => {
+                    on={dom.input(async event => {
                         // Remove empty query params when value is empty
                         if (!event.currentTarget.value) {
                             router.navigate(router.location.pathname + router.location.hash);

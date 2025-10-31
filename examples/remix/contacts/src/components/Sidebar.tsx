@@ -16,9 +16,11 @@ export function Sidebar(this: Remix.Handle) {
             <nav>
                 {contacts.length ? (
                     <ul>
-                        {contacts.map(contact => (
-                            <SidebarItem contact={contact} key={contact.id} />
-                        ))}
+                        {contacts
+                            // .toSorted((a, b) => a.first?.localeCompare(b.first ?? "") ?? -1)
+                            .map(contact => (
+                                <SidebarItem contact={contact} key={contact.id} />
+                            ))}
                     </ul>
                 ) : (
                     <p>
@@ -30,29 +32,26 @@ export function Sidebar(this: Remix.Handle) {
     };
 }
 
-function SidebarItem(this: Remix.Handle, props: { contact: ContactRecord }) {
+function SidebarItem(this: Remix.Handle) {
     const router = this.context.get(App);
 
-    return () => {
-        const href =
+    return ({ contact }: { contact: ContactRecord }) => {
+        const link =
             routes.contact.show.href({
-                contactId: String(props.contact.id),
+                contactId: String(contact.id),
             }) + router.location.search;
 
         return (
             <li>
-                <a
-                    href={href}
-                    on={router.navLink({ activeClass: "active", pendingClass: "pending" })}
-                >
-                    {props.contact.first || props.contact.last ? (
+                <a href={link} class={router.when(link, { active: "active", pending: "pending" })}>
+                    {contact.first || contact.last ? (
                         <>
-                            {props.contact.first} {props.contact.last}
+                            {contact.first} {contact.last}
                         </>
                     ) : (
                         <i>No Name</i>
                     )}
-                    {props.contact.favorite && <span>★</span>}
+                    {contact.favorite && <span>★</span>}
                 </a>
             </li>
         );

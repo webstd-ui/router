@@ -255,9 +255,6 @@ importers:
 
   packages/router:
     dependencies:
-      '@remix-run/dom':
-        specifier: 0.0.0-experimental-remix-jam.1
-        version: 0.0.0-experimental-remix-jam.1
       '@remix-run/events':
         specifier: catalog:remix
         version: 0.0.0-experimental-remix-jam.5
@@ -606,14 +603,8 @@ packages:
   '@quansync/fs@0.1.5':
     resolution: {integrity: sha512-lNS9hL2aS2NZgNW7BBj+6EBl4rOf8l+tQ0eRY6JWCI8jI2kc53gSoqbjojU0OnAWhzoXiOjFyGsHcDGePB3lhA==}
 
-  '@remix-run/dom@0.0.0-experimental-remix-jam.1':
-    resolution: {integrity: sha512-HLLrUpSz7EicCAWQKqJt7RK2Y04sruwASP5gNgTK3GQzL216XCGoh+LjrMRQ8Aw7GFgHSkvQuyhVb6Y4xY2aDw==}
-
   '@remix-run/dom@0.0.0-experimental-remix-jam.6':
     resolution: {integrity: sha512-eQguiFB+Qm0EAA1xK1jLew2M9jp2rGcN+tknPv9gQd5nhT+eetwt3BHaYt9UcJWd3+p0g0cBt23CJrQOK2WStQ==}
-
-  '@remix-run/events@0.0.0-experimental-remix-jam.1':
-    resolution: {integrity: sha512-4Xs0Ek3QYsx2Tq64ZkSMXN9gAwBOg42vzK/5aTkACktb6asljm/wf8mgFPtf+IUegh4BBzkapNXAdmXEh4UqNg==}
 
   '@remix-run/events@0.0.0-experimental-remix-jam.5':
     resolution: {integrity: sha512-rbKP27/YkLZq0gbCy3QpwaHQzJg41IgbC//8SggPgMtWxZdxkcnkWmQGMLH0xwQcBlZ3yLtZRDQvL+ir4GAA6g==}
@@ -632,9 +623,6 @@ packages:
 
   '@remix-run/route-pattern@0.14.0':
     resolution: {integrity: sha512-Wlq1LAsGZBJ5uEnUmxJDBQvpLKhay1mVvxmNl0oeKBOin6yWDB5YkJkSMAlYQi7mM/vVIDlqr183MiHi4SO7AA==}
-
-  '@remix-run/style@0.0.0-experimental-remix-jam.1':
-    resolution: {integrity: sha512-aRETYid6C1V1smXnhbxoFdsOi+qxvXM9NZ9UIQeRQ9ZEWT2TS1dtyeNTv6QXO1Swp9QtdWlnPb6RlzUBvG5h4Q==}
 
   '@remix-run/style@0.0.0-experimental-remix-jam.5':
     resolution: {integrity: sha512-XXCOWiY6lGqeJrGQ47JP5fFFuZXbBsFjBbTu46FNxsox1cny8ZPyZ7C674kX92UimGpOU+zv/lPOoU+ZWGim+w==}
@@ -1636,17 +1624,10 @@ snapshots:
     dependencies:
       quansync: 0.2.11
 
-  '@remix-run/dom@0.0.0-experimental-remix-jam.1':
-    dependencies:
-      '@remix-run/events': 0.0.0-experimental-remix-jam.1
-      '@remix-run/style': 0.0.0-experimental-remix-jam.1
-
   '@remix-run/dom@0.0.0-experimental-remix-jam.6':
     dependencies:
       '@remix-run/events': 0.0.0-experimental-remix-jam.5
       '@remix-run/style': 0.0.0-experimental-remix-jam.5
-
-  '@remix-run/events@0.0.0-experimental-remix-jam.1': {}
 
   '@remix-run/events@0.0.0-experimental-remix-jam.5': {}
 
@@ -1666,8 +1647,6 @@ snapshots:
       '@remix-run/headers': 0.12.0
 
   '@remix-run/route-pattern@0.14.0': {}
-
-  '@remix-run/style@0.0.0-experimental-remix-jam.1': {}
 
   '@remix-run/style@0.0.0-experimental-remix-jam.5': {}
 
