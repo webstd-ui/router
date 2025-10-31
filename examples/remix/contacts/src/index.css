@@ -326,6 +326,14 @@ i {
 #contact-form > p:first-child > :nth-child(2) {
     margin-right: 1rem;
 }
+#contact-form > p:has(input) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+#contact-form > p input {
+    width: 100%;
+}
 #contact-form > p:first-child,
 #contact-form label {
     display: flex;
