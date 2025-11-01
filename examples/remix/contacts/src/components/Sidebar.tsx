@@ -1,26 +1,24 @@
 import type { Remix } from "@remix-run/dom";
 import { events } from "@remix-run/events";
-import { Router } from "@webstd-ui/router";
 import { App } from "~/app.tsx";
-import { CONTACTS_KEY, type ContactRecord } from "~/lib/contacts.ts";
-import { routes } from "~/routes";
+import { CONTACTS, type ContactRecord } from "~/lib/contacts.ts";
+import { AppStorage } from "@webstd-ui/router";
+import { routes } from "~/routes.tsx";
 
 export function Sidebar(this: Remix.Handle) {
-    const router = this.context.get(App);
-    events(router, [Router.update(() => this.update(), { signal: this.signal })]);
+    const { router, storage } = this.context.get(App);
+    events(router, [router.change(() => this.update(), { signal: this.signal })]);
 
     return () => {
-        const contacts = router.storage.get(CONTACTS_KEY) || [];
+        const contacts = storage.get(CONTACTS) || [];
 
         return (
             <nav>
                 {contacts.length ? (
                     <ul>
-                        {contacts
-                            // .toSorted((a, b) => a.first?.localeCompare(b.first ?? "") ?? -1)
-                            .map(contact => (
-                                <SidebarItem contact={contact} key={contact.id} />
-                            ))}
+                        {contacts.map(contact => (
+                            <SidebarItem contact={contact} key={contact.id} />
+                        ))}
                     </ul>
                 ) : (
                     <p>
@@ -33,13 +31,13 @@ export function Sidebar(this: Remix.Handle) {
 }
 
 function SidebarItem(this: Remix.Handle) {
-    const router = this.context.get(App);
+    const { router } = this.context.get(App);
 
     return ({ contact }: { contact: ContactRecord }) => {
         const link =
             routes.contact.show.href({
                 contactId: String(contact.id),
-            }) + router.location.search;
+            }) + router.url.search;
 
         return (
             <li>

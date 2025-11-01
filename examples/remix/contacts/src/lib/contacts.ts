@@ -24,7 +24,8 @@ export type ContactRecord = ContactMutation & {
     createdAt: string;
 };
 
-export const CONTACTS_KEY = createStorageKey<ContactRecord[]>([]);
+export const CONTACTS = createStorageKey<ContactRecord[]>([]);
+export const CONTACT = createStorageKey<ContactRecord | null>(null);
 
 ////////////////////////////////////////////////////////////////////////////////
 // This is just a fake DB table. In a real app you'd be talking to a real db or

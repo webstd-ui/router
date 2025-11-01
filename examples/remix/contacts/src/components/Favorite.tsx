@@ -1,12 +1,15 @@
 import type { Remix } from "@remix-run/dom";
-import { App } from "~/app.tsx";
-import { routes } from "~/routes/index.ts";
 import { RestfulForm } from "./RestfulForm.tsx";
+import { api } from "~/api.ts";
+import { dom } from "@remix-run/events";
+import { App } from "~/app.tsx";
+import { CONTACTS, getContacts } from "~/lib/contacts.ts";
 
-export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: string }) {
-    const router = this.context.get(App);
+export function Favorite(this: Remix.Handle, initialProps: { favorite: boolean; id: string }) {
+    const { router, storage } = this.context.get(App);
+
     let optimistic: boolean | null = null;
-    let currentId = props.id;
+    let currentId = initialProps.id;
 
     return (props: { favorite: boolean; id: string }) => {
         // Reset optimistic state if contact changed
@@ -19,15 +22,28 @@ export function Favorite(this: Remix.Handle, props: { favorite: boolean; id: str
 
         return (
             <RestfulForm
-                action={routes.contact.favorite.href({ contactId: props.id })}
+                action={api.contact.favorite.href({ contactId: props.id })}
                 method="put"
-                on={router.enhanceForm(
-                    formData => {
-                        optimistic = formData ? formData?.get("favorite") === "true" : null;
-                        this.update();
-                    },
-                    { signal: this.signal }
-                )}
+                on={dom.submit(async event => {
+                    const formData = new FormData(event.currentTarget);
+                    optimistic = formData.get("favorite") === "true";
+                    this.update();
+
+                    if (this.signal.aborted) return;
+                    const res = await fetch(event.currentTarget.action, {
+                        method: "post",
+                        headers: { "content-type": "multipart/form-data" },
+                        body: formData,
+                    });
+
+                    if (this.signal.aborted || !res.ok) return;
+
+                    optimistic = null;
+                    const newContacts = await getContacts(router.url.searchParams.get("q"));
+                    storage.set(CONTACTS, newContacts);
+
+                    this.update();
+                })}
             >
                 <button
                     aria-label={favorite ? "Remove from favorites" : "Add to favorites"}

@@ -1,58 +1,65 @@
 import type { Remix } from "@remix-run/dom";
 import { dom, events } from "@remix-run/events";
-import { Router } from "@webstd-ui/router";
 import { App } from "~/app.tsx";
-import { RestfulForm } from "./RestfulForm.tsx";
+import { createSearchState } from "@webstd-ui/router";
+import { CONTACTS, getContacts } from "~/lib/contacts.ts";
 
 export function SearchBar(this: Remix.Handle) {
-    const router = this.context.get(App);
-    events(router, [Router.update(() => this.update(), { signal: this.signal })]);
+    const { router, storage } = this.context.get(App);
 
-    let query: string | undefined;
+    let q: string | undefined;
+    let searching = false;
+    let controller = new AbortController();
 
-    return () => {
-        const searching = router.navigating.to.url?.searchParams.has("q");
-        const currentQuery = router.url.searchParams.get("q") ?? undefined;
+    const query = createSearchState(router, "q");
+    // events(query, [
+    //     query.change(
+    //         ({ value }) => {
+    //             console.log("[VALUE]:", value);
+    //             controller.abort();
+    //             const c = new AbortController();
+    //             controller = c;
 
-        if (query !== currentQuery) {
-            query = currentQuery;
-        }
+    //             q = value;
+    //             searching = true;
+    //             this.update();
 
-        return (
-            <RestfulForm id="search-form">
-                <input
-                    aria-label="Search contacts"
-                    class={searching ? "loading" : undefined}
-                    defaultValue={query ?? ""}
-                    id="q"
-                    name="q"
-                    on={dom.input(async event => {
-                        // Remove empty query params when value is empty
-                        if (!event.currentTarget.value) {
-                            router.navigate(router.location.pathname + router.location.hash);
-                            return;
-                        }
+    //             setTimeout(() => {
+    //                 if (c.signal.aborted) return;
+    //                 searching = false;
+    //                 this.update();
+    //             }, 2000);
 
-                        const isFirstSearch = query === undefined;
+    //             // getContacts(q).then(contacts => {
+    //             //     if (c.signal.aborted) return;
+    //             //     storage.set(CONTACTS, contacts);
 
-                        // Simulate <form method="GET"> programatically
-                        // Adds <input name value>s as search params to URL
-                        // Also performs a client-side navigation
-                        router.submit(event.currentTarget.form, {
-                            replace: !isFirstSearch,
-                        });
+    //             //     searching = false;
+    //             //     this.update();
+    //             // });
+    //         },
+    //         { signal: this.signal }
+    //     ),
+    // ]);
 
-                        // Update previousQuery immediately so next input sees the current value
-                        if (event.currentTarget.value !== query) {
-                            query = event.currentTarget.value;
-                        }
-                    })}
-                    placeholder="Search"
-                    type="search"
-                />
-                <div aria-hidden hidden={!searching} id="search-spinner" />
-                <div aria-live="polite" class="sr-only" />
-            </RestfulForm>
-        );
-    };
+    return () => (
+        <form id="search-form">
+            <input
+                aria-label="Search contacts"
+                class={searching ? "loading" : undefined}
+                defaultValue={q ?? ""}
+                id="q"
+                name="q"
+                on={dom.input(async event => {
+                    console.log("[SearchBar input] Setting query.value to:", event.currentTarget.value);
+                    query.value = event.currentTarget.value;
+                    console.log("[SearchBar input] query.value set");
+                })}
+                placeholder="Search"
+                type="search"
+            />
+            <div aria-hidden hidden={!searching} id="search-spinner" />
+            <div aria-live="polite" class="sr-only" />
+        </form>
+    );
 }

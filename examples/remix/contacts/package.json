@@ -6,6 +6,7 @@
         "@remix-run/dom": "catalog:remix",
         "@remix-run/events": "catalog:remix",
         "@remix-run/fetch-router": "catalog:remix",
+        "@remix-run/route-pattern": "catalog:remix",
         "@remix-run/style": "catalog:remix",
         "@std/assert": "catalog:std",
         "@std/async": "catalog:std",

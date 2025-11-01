@@ -1,25 +1,28 @@
 import type { Remix } from "@remix-run/dom";
-import { Router } from "@webstd-ui/router";
+import { AppStorage, createHelpers } from "@webstd-ui/router";
+import type { Router } from "@webstd-ui/router";
 import { Details } from "./components/Details.tsx";
 import { SearchBar } from "./components/SearchBar.tsx";
 import { Sidebar } from "./components/Sidebar.tsx";
-import { CONTACTS_KEY, getContacts } from "./lib/contacts.ts";
-import { routes } from "./routes";
-import { handlers } from "./routes/handlers";
+import { CONTACTS, getContacts } from "./lib/contacts.ts";
+import { api } from "./api.ts";
+import { createRouter, routes, storage } from "./routes.tsx";
 
-type RemixRouter = Router<Remix.RemixNode>;
+interface AppContext {
+    router: Router<Remix.RemixNode, typeof routes>;
+    storage: AppStorage;
+}
 
-export function App(this: Remix.Handle<RemixRouter>) {
-    const router: RemixRouter = new Router();
-    router.map(routes, handlers);
-    this.context.set(router);
+export function App(this: Remix.Handle<AppContext>) {
+    const router = createRouter(routes, { signal: this.signal });
+    this.context.set({ router, storage });
 
     let isLoading = true;
 
     this.queueTask(async () => {
         // Load initial data into storage
         const contacts = await getContacts();
-        router.storage.set(CONTACTS_KEY, contacts);
+        storage.set(CONTACTS, contacts);
 
         isLoading = false;
         this.update();
@@ -36,7 +39,7 @@ export function App(this: Remix.Handle<RemixRouter>) {
                     <h1>Remix Contacts</h1>
                     <div>
                         <SearchBar />
-                        <form action={routes.contact.create.href()} method="post">
+                        <form action={api.contact.create.href()} method="post">
                             <button type="submit">New</button>
                         </form>
                     </div>

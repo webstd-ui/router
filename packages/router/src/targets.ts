@@ -30,7 +30,7 @@ type TargetFunction<ECurrentTarget, EventMap, ETarget = EventTarget> = {
     };
 };
 
-export function createTargetProxy<ECurrentTarget, ETarget, EventMap>(): TargetFunction<
+function createTargetProxy<ECurrentTarget, ETarget, EventMap>(): TargetFunction<
     ECurrentTarget,
     EventMap,
     ETarget
@@ -59,4 +59,11 @@ export function createTargetProxy<ECurrentTarget, ETarget, EventMap>(): TargetFu
     );
 }
 
+// Navigation API
 export let nav = createTargetProxy<Navigation, EventTarget, NavigationEventMap>();
+// Service worker `self`
+export let worker = createTargetProxy<
+    Window & typeof globalThis,
+    EventTarget,
+    ServiceWorkerGlobalScopeEventMap
+>();

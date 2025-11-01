@@ -24,13 +24,13 @@
         "url": "https://github.com/webstd-ui/router/issues"
     },
     "type": "module",
-    "main": "dist/index.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "dist/router.js",
+    "module": "dist/router.js",
+    "types": "dist/router.d.ts",
     "exports": {
         ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js"
+            "types": "./dist/router.d.ts",
+            "import": "./dist/router.js"
         }
     },
     "files": [

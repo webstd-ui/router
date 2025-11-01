@@ -10,32 +10,54 @@ export interface EventFactory<
         options?: AddEventListenerOptions
     ): EventDescriptor<ECurrentTarget>;
 
-    dispatchEvent(
-        ...args: CustomEvent<null> extends Event ? [init?: CustomEventInit<null>] : [event: E]
-    ): void;
+    createEvent(
+        ...args: CustomEvent<null> extends E ? [init?: CustomEventInit<null>] : [event: E]
+    ): E;
 }
 
+// export function createEventFactory<
+//     E extends Event = CustomEvent<null>,
+//     ECurrentTarget extends EventTarget = EventTarget
+// >(target: ECurrentTarget, eventName: string): EventFactory<E, ECurrentTarget> {
+//     return {
+//         bind(handler, options) {
+//             return bind<E, ECurrentTarget>(eventName, handler, options);
+//         },
+//         dispatchEvent(...args) {
+//             if (args[0] instanceof Event) {
+//                 const event = args[0];
+//                 target.dispatchEvent(event);
+//             } else {
+//                 const init = args[0];
+//                 target.dispatchEvent(
+//                     new CustomEvent(eventName, {
+//                         bubbles: true,
+//                         cancelable: true,
+//                         ...init,
+//                     })
+//                 );
+//             }
+//         },
+//     };
+// }
 export function createEventFactory<
     E extends Event = CustomEvent<null>,
     ECurrentTarget extends EventTarget = EventTarget
->(target: ECurrentTarget, eventName: string): EventFactory<E, ECurrentTarget> {
+>(eventName: string): EventFactory<E, ECurrentTarget> {
     return {
         bind(handler, options) {
             return bind<E, ECurrentTarget>(eventName, handler, options);
         },
-        dispatchEvent(...args) {
+        createEvent(...args) {
             if (args[0] instanceof Event) {
-                const event = args[0];
-                target.dispatchEvent(event);
+                return args[0] as E;
             } else {
                 const init = args[0];
-                target.dispatchEvent(
-                    new CustomEvent(eventName, {
-                        bubbles: true,
-                        cancelable: true,
-                        ...init,
-                    })
-                );
+                return new CustomEvent(eventName, {
+                    bubbles: true,
+                    cancelable: true,
+                    ...init,
+                }) as unknown as E;
             }
         },
     };
