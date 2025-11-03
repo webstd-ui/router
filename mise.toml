@@ -1,1 +1,16 @@
 experimental_monorepo_root = true
+
+[tasks."dev:crank:contacts"]
+depends = ["//packages/router:dev", "//examples/crank/contacts:dev"]
+
+[tasks."dev:lit:contacts"]
+depends = ["//packages/router:dev", "//examples/lit/contacts:dev"]
+
+[tasks."dev:remix:blog"]
+depends = ["//packages/router:dev", "//examples/remix/blog:dev"]
+
+[tasks."dev:remix:contacts"]
+depends = ["//packages/router:dev", "//examples/remix/contacts:dev"]
+
+[tasks."dev:remix:tasks"]
+depends = ["//packages/router:dev", "//examples/remix/tasks:dev"]
